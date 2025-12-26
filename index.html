@@ -7,6 +7,30 @@
     <title>Mortgage Planner | Calculator with Extra Payments & Tax Increases</title>
     <meta name="description" content="Calculate your mortgage amortization with extra payments, annual tax increases, and PMI removal. Plan your payoff strategy effectively.">
     
+    <link rel="canonical" href="https://mortgageplanner.net" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Mortgage Payoff Planner",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "description": "A free mortgage calculator that handles extra payments, annual tax increases, and PMI removal.",
+      "featureList": "Amortization schedule, Extra payment calculator, PMI removal date, Tax increase projection",
+      "author": {
+        "@type": "Organization",
+        "name": "Mortgage Planner",
+        "url": "https://mortgageplanner.net"
+      }
+    }
+    </script>
+    
     <meta property="og:site_name" content="Mortgage Planner">
     <meta property="og:title" content="Mortgage Planner | Calculator with Extra Payments & Tax Increases">
     <meta property="og:description" content="Plan your mortgage payoff with precision. Calculate amortization, PMI removal, and annual tax increases instantly.">
@@ -71,7 +95,7 @@
             flex-direction: column;
             min-height: 100vh;
             line-height: 1.5;
-            padding-top: 72px; /* Space for fixed header */
+            padding-top: 72px; 
         }
 
         /* 2. NAVIGATION (FIXED & FULL WIDTH) */
@@ -828,6 +852,18 @@
         // SET DYNAMIC YEAR
         document.getElementById('copyrightYear').innerText = new Date().getFullYear();
 
+        // --- GENERIC MODAL FUNCTIONS ---
+        function openModal(id) {
+            document.getElementById(id).classList.add('open');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('open');
+        }
+
+        // WRAPPERS FOR SPECIFIC BUTTONS
+        function openFeedback() { openModal('feedbackModal'); }
+        function closeFeedback() { closeModal('feedbackModal'); }
+
         // --- CONTENT ACCORDION TOGGLE ---
         function toggleContent(header) {
             const body = header.nextElementSibling;
@@ -843,18 +879,6 @@
                 icon.style.transform = "rotate(180deg)";
             }
         }
-
-        // --- MODAL FUNCTIONS ---
-        function openModal(id) {
-            document.getElementById(id).classList.add('open');
-        }
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('open');
-        }
-
-        // WRAPPERS FOR SPECIFIC BUTTONS
-        function openFeedback() { openModal('feedbackModal'); }
-        function closeFeedback() { closeModal('feedbackModal'); }
 
         let currentSchedule = [];
         let myChart = null;
