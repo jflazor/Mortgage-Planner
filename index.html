@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <title>Mortgage Planner | Calculator with Extra Payments & Tax Increases</title>
-    <meta name="description" content="Calculate your mortgage amortization with extra payments, annual tax increases, and PMI removal. Plan your payoff strategy effectively.">
+    <title>Mortgage Planner | Shareable Mortgage Calculator & Payoff Tool</title>
+    <meta name="description" content="Create and share custom mortgage plans. Calculate amortization with extra payments and tax increases, then send a live link to your partner or realtor.">
     
     <link rel="canonical" href="https://mortgageplanner.net" />
 
@@ -21,8 +21,8 @@
         "price": "0",
         "priceCurrency": "USD"
       },
-      "description": "A free mortgage calculator that handles extra payments, annual tax increases, and PMI removal.",
-      "featureList": "Amortization schedule, Extra payment calculator, PMI removal date, Tax increase projection",
+      "description": "A shareable mortgage calculator that allows users to create and send custom payoff scenarios via link.",
+      "featureList": "Amortization schedule, Shareable scenario links, PMI removal date, Tax increase projection",
       "author": {
         "@type": "Organization",
         "name": "Mortgage Planner",
@@ -32,8 +32,8 @@
     </script>
     
     <meta property="og:site_name" content="Mortgage Planner">
-    <meta property="og:title" content="Mortgage Planner | Calculator with Extra Payments & Tax Increases">
-    <meta property="og:description" content="Plan your mortgage payoff with precision. Calculate amortization, PMI removal, and annual tax increases instantly.">
+    <meta property="og:title" content="Mortgage Planner | Shareable Mortgage Calculator">
+    <meta property="og:description" content="I built a custom mortgage plan. Click to see the exact numbers, payoff date, and total savings.">
     <meta property="og:url" content="https://mortgageplanner.net">
     <meta property="og:type" content="website">
     <meta property="og:image" content="https://mortgageplanner.net/og-image.png">
@@ -98,7 +98,7 @@
             padding-top: 72px; 
         }
 
-        /* 2. NAVIGATION (FIXED & FULL WIDTH) */
+        /* 2. NAVIGATION */
         nav {
             background: var(--brand-navy);
             padding: 1rem 0;
@@ -127,8 +127,8 @@
 
         /* 3. HERO */
         .hero { background: white; padding: 2rem 1.5rem; border-bottom: 1px solid var(--border-color); margin-bottom: 1.5rem; text-align: center; width: 100%; }
-        .hero h1 { font-size: 1.75rem; font-weight: 700; color: var(--brand-navy); margin-bottom: 0.25rem; }
-        .hero p { color: var(--brand-slate); font-size: 1rem; max-width: 600px; margin: 0 auto; }
+        .hero h1 { font-size: 1.75rem; font-weight: 700; color: var(--brand-navy); margin-bottom: 0.5rem; }
+        .hero p { color: var(--brand-slate); font-size: 1rem; max-width: 600px; margin: 0 auto; line-height: 1.6; }
 
         /* 4. LAYOUT */
         .app-container {
@@ -174,6 +174,7 @@
                 gap: 10px;
             }
             .results-header button { width: 100%; }
+            .results-actions { width: 100%; }
         }
 
         /* CARD STYLES */
@@ -207,6 +208,7 @@
         /* --- INPUT STYLING --- */
         .input-group { margin-bottom: 1.25rem; width: 100%; }
         
+        /* Default Label Style */
         label {
             display: flex;
             align-items: center;
@@ -216,6 +218,15 @@
             color: var(--brand-navy);
             gap: 6px;
         }
+
+        /* Helper for the Label Row with Select */
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.4rem;
+        }
+        .label-row label { margin-bottom: 0; }
 
         .input-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
 
@@ -252,6 +263,15 @@
             box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.1);
         }
 
+        /* NEW HELPER TEXT CLASS */
+        .helper-text {
+            font-size: 0.75rem;
+            color: var(--brand-teal);
+            font-weight: 600;
+            margin-top: 4px;
+            min-height: 1.2em; /* Keeps layout stable even if empty */
+        }
+
         .input-row { display: flex; gap: 10px; width: 100%; }
         .split-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; width: 100%; }
 
@@ -284,6 +304,27 @@
         .btn-primary:hover { background-color: var(--brand-navy-light); }
         .btn-secondary { background: transparent; border: 1px solid var(--brand-navy); color: var(--brand-navy); padding: 0.5rem 1rem; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 0.85rem; }
         .btn-secondary:hover { background: #f1f5f9; }
+        
+        /* NEW EXAMPLE BUTTON STYLES */
+        .example-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+        .example-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        
+        .btn-example-small { 
+            background: #fff; border: 1px solid var(--border-color); color: var(--brand-teal-dark); 
+            padding: 0.5rem 0.75rem; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.8rem;
+            white-space: nowrap; min-width: 140px; text-align: center;
+            transition: all 0.2s;
+        }
+        .btn-example-small:hover { border-color: var(--brand-teal); background-color: #f0fdfa; transform: translateY(-1px); }
+        
+        .example-desc { font-size: 0.85rem; color: #475569; line-height: 1.4; }
 
         /* COFFEE BUTTON */
         .coffee-section { text-align: center; margin-bottom: 3rem; padding: 0 1rem; }
@@ -300,6 +341,11 @@
         .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color); }
         .results-header h2 { border: none; padding: 0; margin: 0; }
         
+        /* SCROLL MARGIN FIX - RESET TO 120px */
+        #results { scroll-margin-top: 120px; }
+        
+        .results-actions { display: flex; gap: 10px; }
+
         .summary-cards { 
             display: grid; 
             grid-template-columns: repeat(3, 1fr); 
@@ -577,8 +623,8 @@
     </div>
 
     <div class="hero">
-        <h1>See Your Future Payments</h1>
-        <p>Preview your full mortgage breakdown, taxes, and amortization schedule instantly.</p>
+        <h1>Plan Your Mortgage. Share Your Strategy.</h1>
+        <p>Don't just calculate payments—plan for tax increases and explore early payoff options. Then, share your custom scenario instantly.</p>
     </div>
 
     <div class="app-container">
@@ -586,25 +632,28 @@
         <div class="card">
             <h2>Loan Parameters</h2>
             
-            <div class="input-group">
-                <label>Home Price ($)</label>
-                <div class="input-wrapper">
-                    <span class="input-icon">$</span>
-                    <input type="text" id="homePrice" class="has-left-icon" value="350,000" placeholder="350,000" onblur="formatInput(this)">
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label>Down Payment</label>
-                <div class="input-row">
-                    <div class="input-wrapper" style="flex:1;">
-                        <span class="input-icon right" id="downIcon">%</span>
-                        <input type="text" id="downPayment" class="has-right-icon" value="20" onblur="formatInput(this)">
+            <div class="split-inputs">
+                <div class="input-group">
+                    <label>Home Price ($)</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">$</span>
+                        <input type="text" id="homePrice" class="has-left-icon" value="350,000" placeholder="350,000" onblur="formatInput(this)" oninput="updateDownPaymentHelper()">
                     </div>
-                    <select id="downPaymentType" style="width: 70px; text-align:center; font-weight:600;" onchange="updateDownIcon()">
-                        <option value="percent">%</option>
-                        <option value="dollar">$</option>
-                    </select>
+                </div>
+
+                <div class="input-group">
+                    <div class="label-row">
+                        <label>Down Payment</label>
+                        <select id="downPaymentType" style="width: 45px; padding: 0 2px; text-align:center; font-weight:600;" onchange="updateDownIcon()">
+                            <option value="percent">%</option>
+                            <option value="dollar">$</option>
+                        </select>
+                    </div>
+                    <div class="input-wrapper">
+                        <span class="input-icon right" id="downIcon">%</span>
+                        <input type="text" id="downPayment" class="has-right-icon" value="20" onblur="formatInput(this)" oninput="updateDownPaymentHelper()">
+                    </div>
+                    <div id="downPaymentHelper" class="helper-text"></div>
                 </div>
             </div>
 
@@ -722,15 +771,15 @@
 
             <button id="calcBtn" class="btn-primary" onclick="calculate()">Plan Your Payment</button>
 
-            <div style="display: flex; gap: 10px; margin-top: 1rem; justify-content: center;">
-                <button onclick="shareSite()" class="btn-secondary" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                    <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
-                    Share
+            <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 10px;">
+                <button onclick="shareSite()" class="btn-secondary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 0.8rem; background-color: #f1f5f9; border-color: #cbd5e1;">
+                    <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+                    Share this Plan
                 </button>
                 
-                <button onclick="saveSite()" class="btn-secondary" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                    <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
-                    Save
+                <button onclick="bookmarkPlan()" class="btn-secondary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 0.8rem; border-style: dashed;">
+                    <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                    Bookmark this Plan
                 </button>
             </div>
         </div>
@@ -744,7 +793,10 @@
             <div id="results" class="hidden">
                 <div class="results-header">
                     <h2>Your Plan Breakdown</h2>
-                    <button class="btn-secondary" onclick="exportPDF()">Save PDF</button>
+                    <div class="results-actions">
+                        <button class="btn-secondary" onclick="emailPlan()">Email Plan</button>
+                        <button class="btn-secondary" onclick="exportPDF()">Save PDF</button>
+                    </div>
                 </div>
 
                 <div class="summary-cards">
@@ -762,16 +814,23 @@
                     </div>
                 </div>
 
-                <p style="text-align: center; font-size: 0.85rem; color: #64748b; margin-bottom: 1.5rem;">
-                    Loan Principal: <strong id="displayLoanPrincipal">$0</strong> (after down payment)
-                    <br><span id="pmiStatus" style="font-size:0.8rem; color:#d97706;"></span>
-                </p>
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <p style="font-size: 1rem; color: var(--brand-navy); margin-bottom: 4px;">
+                        Loan Principal: <strong id="displayLoanPrincipal">$0</strong>
+                    </p>
+                    <p id="downPaymentDisplayResult" style="font-size: 0.85rem; color: #64748b; margin-bottom: 4px;"></p>
+                    <p id="pmiStatus" style="font-size:0.8rem; color:#d97706; margin-bottom: 0;"></p>
+                </div>
 
                 <div class="chart-container">
                     <canvas id="myChart"></canvas>
                 </div>
 
-                <h2 style="font-size: 0.9rem; margin-bottom: 1rem; border-bottom: none;">Amortization Schedule (Click Years to Expand)</h2>
+                <div style="margin-bottom: 1rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">
+                    <h2 style="font-size: 1.1rem; margin-bottom: 0.25rem; border: none; padding: 0;">Amortization Schedule</h2>
+                    <p style="font-size: 0.8rem; color: #64748b;">(Click rows to expand details)</p>
+                </div>
+                
                 <div class="table-wrapper">
                     <table id="amortizationTable">
                         <thead>
@@ -796,6 +855,36 @@
         
         <div class="content-card">
             <div class="content-header" onclick="toggleContent(this)">
+                <span>Examples: The Power of Early Payoff</span>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="content-body">
+                <p>Click a button below to instantly apply these scenarios to your current loan details:</p>
+                
+                <div class="example-row">
+                    <button class="btn-example-small" onclick="loadExample('baseline')">Baseline (Reset)</button>
+                    <span class="example-desc">Clear extra payments to see the standard loan path.</span>
+                </div>
+                
+                <div class="example-row">
+                    <button class="btn-example-small" onclick="loadExample('extra100')">+$100 / Month</button>
+                    <span class="example-desc">See how a small monthly habit impacts total interest.</span>
+                </div>
+                
+                <div class="example-row">
+                    <button class="btn-example-small" onclick="loadExample('lumpSum')">Year 3 Bonus</button>
+                    <span class="example-desc">Inject a one-time $10,000 payment in Month 36.</span>
+                </div>
+                
+                <div class="example-row">
+                    <button class="btn-example-small" onclick="loadExample('aggressive')">Aggressive</button>
+                    <span class="example-desc">Add $500/month to slash years off the term.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <div class="content-header" onclick="toggleContent(this)">
                 <span>How to Use This Mortgage Planner</span>
                 <span class="toggle-icon">▼</span>
             </div>
@@ -805,6 +894,8 @@
                 <p>2. <strong>Add Expenses:</strong> Fill in your estimated annual property tax and insurance. If you have an HOA fee, include that as a monthly cost.</p>
                 <p>3. <strong>Check Advanced Options:</strong> This is a specialized <strong>calculator for mortgage with annual tax increase</strong> capability. Click "Advanced Options" to set a percentage for Tax, Insurance, or HOA increases to see how your monthly payment will change over 10 or 20 years.</p>
                 <p>4. <strong>Analyze Results:</strong> Click "Plan Your Payment" to generate a full visualization. Use the interactive <strong>amortization schedule with PMI drop off date</strong> to see exactly when you will stop paying mortgage insurance.</p>
+                <p>5. <strong>View Examples:</strong> Check the 'Examples' section below to see how strategies like adding $100/mo or annual bonuses can save you thousands using your own numbers.</p>
+                <p>6. <strong>Share Your Plan:</strong> Found a strategy that saves you money? Click the "Share this Plan" button to send a live link to your spouse or realtor. They will see your exact numbers instantly.</p>
             </div>
         </div>
 
@@ -892,8 +983,93 @@
             }
         }
 
+        // --- URL SHARE LOGIC ---
+        function getShareableLink() {
+            const params = new URLSearchParams();
+            
+            // Map inputs to URL params
+            params.set('p', getCleanNumber('homePrice'));
+            params.set('d', getCleanNumber('downPayment'));
+            params.set('dt', document.getElementById('downPaymentType').value);
+            params.set('r', document.getElementById('interestRate').value);
+            params.set('t', document.getElementById('loanTerm').value);
+            params.set('tax', getCleanNumber('annualTax'));
+            params.set('ins', getCleanNumber('annualIns'));
+            params.set('pmi', document.getElementById('pmiRate').value);
+            params.set('hoa', getCleanNumber('monthlyHOA'));
+            
+            // Advanced
+            const extra = getCleanNumber('extraPrincipal');
+            if(extra > 0) params.set('ex', extra);
+            
+            const iTax = document.getElementById('incTax').value;
+            if(iTax > 0) params.set('it', iTax);
+            
+            const iIns = document.getElementById('incIns').value;
+            if(iIns > 0) params.set('ii', iIns);
+            
+            const iHoa = document.getElementById('incHOA').value;
+            if(iHoa > 0) params.set('ih', iHoa);
+
+            return window.location.origin + window.location.pathname + '?' + params.toString();
+        }
+
+        function initFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            if(params.size === 0) return;
+
+            // Helper to set values
+            const setVal = (id, key, isCurrency = false) => {
+                if(params.has(key)) {
+                    const el = document.getElementById(id);
+                    el.value = params.get(key);
+                    if(isCurrency) formatInput(el);
+                }
+            };
+
+            setVal('homePrice', 'p', true);
+            setVal('downPayment', 'd', true); // will fix format after type check
+            
+            if(params.has('dt')) {
+                const type = params.get('dt');
+                document.getElementById('downPaymentType').value = type;
+                updateDownIcon(); // Update the % or $ symbol
+                // Re-format down payment based on type
+                formatInput(document.getElementById('downPayment'));
+            }
+
+            setVal('interestRate', 'r');
+            setVal('loanTerm', 't');
+            setVal('annualTax', 'tax', true);
+            setVal('annualIns', 'ins', true);
+            setVal('pmiRate', 'pmi');
+            setVal('monthlyHOA', 'hoa', true);
+            
+            // Advanced handling
+            let advancedUsed = false;
+            if(params.has('ex')) { setVal('extraPrincipal', 'ex', true); advancedUsed = true; }
+            if(params.has('it')) { setVal('incTax', 'it'); advancedUsed = true; }
+            if(params.has('ii')) { setVal('incIns', 'ii'); advancedUsed = true; }
+            if(params.has('ih')) { setVal('incHOA', 'ih'); advancedUsed = true; }
+
+            // If advanced features used, open the accordion
+            if(advancedUsed) {
+                document.getElementById('advancedSection').classList.remove('hidden');
+                document.getElementById('advancedToggle').innerText = "(-) Advanced Options";
+            }
+
+            // UPDATE: Call helper update before calculation
+            updateDownPaymentHelper();
+
+            // Auto Calculate
+            calculate();
+        }
+
         // NATIVE SHARE FUNCTION
         function shareSite() {
+            const shareUrl = getShareableLink();
+            const price = document.getElementById('homePrice').value;
+            
             // Track Event
             if(typeof gtag === 'function') {
                 gtag('event', 'click_share', {
@@ -904,28 +1080,117 @@
 
             if (navigator.share) {
                 navigator.share({
-                    title: 'Mortgage Planner',
-                    text: 'I found this free mortgage calculator that handles PMI removal and tax increases. Check it out:',
-                    url: 'https://mortgageplanner.net'
+                    title: 'Mortgage Plan',
+                    text: `Check out this mortgage plan for a $${price} home:`,
+                    url: shareUrl
                 })
                 .catch((error) => console.log('Error sharing', error));
             } else {
-                // Fallback for desktops that don't support native sharing
-                navigator.clipboard.writeText('https://mortgageplanner.net');
-                alert('Link copied to clipboard! You can now paste it to a friend.');
+                // Fallback for desktops
+                navigator.clipboard.writeText(shareUrl);
+                alert('Specific plan link copied to clipboard! You can paste this in an email or text.');
             }
         }
 
-        // BOOKMARK REMINDER
-        function saveSite() {
+        // SMART BOOKMARK FUNCTION (Forces URL Update first)
+        function bookmarkPlan() {
+            const newUrl = getShareableLink();
+            
+            // 1. SILENTLY UPDATE URL BAR
+            window.history.pushState({}, '', newUrl);
+            
             // Track Event
             if(typeof gtag === 'function') {
                 gtag('event', 'click_save_bookmark', {
                     'event_category': 'Engagement',
-                    'event_label': 'Bookmark Nudge'
+                    'event_label': 'Bookmark Button'
                 });
             }
-            alert('Press Ctrl+D (Windows) or Cmd+D (Mac) to bookmark this calculator for your next house hunt!');
+            
+            alert('Your custom scenario is now in the address bar.\n\nPress Ctrl+D (Windows) or Cmd+D (Mac) to bookmark this specific plan!');
+        }
+
+        // UPDATED EMAIL FUNCTION (Smart Fallback)
+        function emailPlan() {
+            const shareUrl = getShareableLink();
+            const totalMonthly = document.getElementById('displayTotalMonthly').innerText;
+            const principal = document.getElementById('displayLoanPrincipal').innerText;
+            const price = document.getElementById('homePrice').value; // Get price for Subject Line
+            const term = document.getElementById('loanTerm').value; // Get Term
+            
+            // Track Event
+            if(typeof gtag === 'function') {
+                gtag('event', 'click_email_plan', {
+                    'event_category': 'Engagement',
+                    'event_label': 'Email Plan Button'
+                });
+            }
+
+            // DYNAMIC SUBJECT LINE
+            const subject = `Mortgage Planner | $${price} home, ${totalMonthly}/mo, ${term} yr.`;
+            
+            const body = `Here is the mortgage plan I calculated using Mortgage Planner:
+
+Loan Amount: ${principal}
+Initial Monthly Payment: ${totalMonthly}
+
+Click this link to see the full interactive breakdown (taxes, HOA, and extra payments included):
+${shareUrl}`;
+
+            // 1. Copy to clipboard AUTOMATICALLY (as a backup)
+            navigator.clipboard.writeText(body).then(() => {
+                // 2. Try to open the mail client
+                window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                
+                // 3. Tell the user what happened
+                alert("We tried to open your email app!\n\nIf nothing happened (common on Macs), don't worry—we also copied the plan to your clipboard.\n\nJust open your email and paste into the Email Message.");
+            });
+        }
+
+        // --- NEW: EXAMPLE LOADER FUNCTION (PRESERVES USER INPUTS) ---
+        function loadExample(type) {
+            // NOTE: We do NOT clear Home Price, Rate, Term, etc.
+            // We only reset the "Advanced / Extra Payment" fields.
+            
+            document.getElementById('extraPrincipal').value = "";
+            document.getElementById('incTax').value = "0";
+            document.getElementById('incIns').value = "0";
+            document.getElementById('incHOA').value = "0";
+            
+            // Reset One-Time Rows to just one empty row
+            document.getElementById('oneTimeContainer').innerHTML = `
+                <div class="otp-row">
+                    <input type="number" placeholder="Month #" class="otp-month" style="width: 40%;" min="1">
+                    <div class="input-wrapper" style="flex: 1;">
+                        <span class="input-icon">$</span>
+                        <input type="text" placeholder="Amount" class="has-left-icon otp-amount" onblur="formatInput(this)">
+                    </div>
+                    <button class="otp-remove-btn" onclick="removeOneTimeRow(this)" title="Remove">×</button>
+                </div>`;
+
+            // Apply Specific Scenario Logic
+            if (type === 'extra100') {
+                document.getElementById('extraPrincipal').value = "100";
+                document.getElementById('advancedSection').classList.remove('hidden');
+                document.getElementById('advancedToggle').innerText = "(-) Advanced Options";
+            } 
+            else if (type === 'aggressive') {
+                document.getElementById('extraPrincipal').value = "500";
+                document.getElementById('advancedSection').classList.remove('hidden');
+                document.getElementById('advancedToggle').innerText = "(-) Advanced Options";
+            }
+            else if (type === 'lumpSum') {
+                const row = document.querySelector('.otp-row');
+                row.querySelector('.otp-month').value = 36;
+                row.querySelector('.otp-amount').value = "10,000";
+                document.getElementById('advancedSection').classList.remove('hidden');
+                document.getElementById('advancedToggle').innerText = "(-) Advanced Options";
+            }
+
+            // Run Updates
+            updateDownIcon(); 
+            updateDownPaymentHelper(); 
+            calculate(); 
         }
 
         let currentSchedule = [];
@@ -975,17 +1240,39 @@
             const type = document.getElementById('downPaymentType').value;
             const icon = document.getElementById('downIcon');
             const input = document.getElementById('downPayment');
+            const helper = document.getElementById('downPaymentHelper');
 
             if (type === 'percent') {
                 icon.innerText = '%';
                 icon.classList.add('right');
                 input.classList.remove('has-left-icon');
                 input.classList.add('has-right-icon');
+                updateDownPaymentHelper(); // Trigger helper calculation
             } else {
                 icon.innerText = '$';
                 icon.classList.remove('right');
                 input.classList.remove('has-right-icon');
                 input.classList.add('has-left-icon');
+                helper.innerText = ''; // Clear helper if dollar mode
+            }
+        }
+
+        function updateDownPaymentHelper() {
+            const type = document.getElementById('downPaymentType').value;
+            const helper = document.getElementById('downPaymentHelper');
+            
+            if (type === 'percent') {
+                const price = getCleanNumber('homePrice');
+                const percent = getCleanNumber('downPayment');
+                if (price > 0 && percent > 0) {
+                    const amount = price * (percent / 100);
+                    // UPDATE: Changed text format here
+                    helper.innerText = `Amount: ${toCurrency(amount)}`;
+                } else {
+                    helper.innerText = '';
+                }
+            } else {
+                helper.innerText = '';
             }
         }
 
@@ -1245,6 +1532,15 @@
                     document.getElementById('pmiStatus').innerText = `* Includes PMI until Month ${pmiDropMonth} (Year ${dropYear})`;
                 }
 
+                // Update Result Text with Down Payment Amount
+                let downText = "";
+                if(downAmount > 0) {
+                    downText = `(after down payment of <strong>${toCurrency(downAmount)}</strong>)`;
+                } else {
+                    downText = "(0% down payment)";
+                }
+                document.getElementById('downPaymentDisplayResult').innerHTML = downText;
+
                 document.getElementById('displayTotalMonthly').innerText = toCurrency(initialTotalMonthly);
                 document.getElementById('displayPI').innerText = toCurrency(monthlyPI);
                 document.getElementById('displayTaxInsPMI').innerText = toCurrency(monthlyTax + monthlyIns + monthlyPMI + monthlyHOA);
@@ -1253,11 +1549,22 @@
                 document.getElementById('placeholder').classList.add('hidden');
                 document.getElementById('results').classList.remove('hidden');
                 
-                // AUTO SCROLL
-                resultsDiv.scrollIntoView({ behavior: 'smooth' });
+                // FORCE SCROLL TO TOP OF RESULTS WITH OFFSET
+                const resultsHeader = document.querySelector('.results-header'); 
+                const headerOffset = 120; // RESET TO 120px
+                const elementPosition = resultsHeader.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: "smooth"
+                });
 
                 drawPieChart(monthlyPI, annualTax/12, annualIns/12, monthlyPMI, monthlyHOA);
                 
+                // --- NEW: DYNAMIC BROWSER TITLE (SEO BOOST) ---
+                document.title = `Plan: ${toCurrency(initialTotalMonthly).split('.')[0]}/mo | ${toCurrency(homePrice).split('.')[0]} Home`;
+
                 setTimeout(() => { btn.innerText = origText; }, 300);
 
             } catch (error) {
@@ -1328,6 +1635,12 @@
         function exportPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
+            
+            // Get values for dynamic filename
+            const price = getCleanNumber('homePrice');
+            const monthly = document.getElementById('displayTotalMonthly').innerText.replace(/[^0-9.]/g, '');
+            const term = document.getElementById('loanTerm').value;
+            const filename = `MortgagePlan_${Math.round(price/1000)}k_${Math.round(monthly)}mo_${term}yr.pdf`;
 
             doc.setFont("helvetica", "bold");
             doc.setTextColor(15, 23, 42); 
@@ -1338,18 +1651,22 @@
             doc.setFontSize(10);
             doc.setTextColor(100);
             const totalMonthly = document.getElementById('displayTotalMonthly').innerText;
-            doc.text(`Initial Monthly Payment: ${totalMonthly}`, 14, 30);
+            doc.text(`Initial Monthly Payment: ${totalMonthly}`, 14, 32);
             
             const principal = document.getElementById('displayLoanPrincipal').innerText;
-            doc.text(`Total Loan Amount Financed: ${principal}`, 14, 36);
+            doc.text(`Total Loan Amount Financed: ${principal}`, 14, 38);
             
-            const pmiText = document.getElementById('pmiStatus').innerText;
+            // Fix PMI Text overlap & encoding
+            let pmiText = document.getElementById('pmiStatus').innerText;
+            // Replace special unicode characters that might break in standard PDF fonts
+            pmiText = pmiText.replace(/≥/g, ">="); 
+            
             doc.setTextColor(217, 119, 6); 
-            doc.text(pmiText, 14, 42);
+            doc.text(pmiText, 14, 46); // Increased spacing (y-axis)
 
             if(pmiDropMonth > 0) {
                 doc.setTextColor(34, 197, 94); 
-                doc.text(`PMI Estimated Removal: Payment #${pmiDropMonth}`, 14, 48);
+                doc.text(`PMI Estimated Removal: Payment #${pmiDropMonth}`, 14, 52);
             }
 
             const tableData = currentSchedule.map(row => [
@@ -1362,7 +1679,7 @@
             ]);
 
             doc.autoTable({
-                startY: 55,
+                startY: 60, // Pushed table down to make room for header
                 head: [['Year', 'Month', 'Interest', 'Principal', 'Total Payment', 'Balance']],
                 body: tableData,
                 theme: 'grid',
@@ -1375,8 +1692,14 @@
                 }
             });
 
-            doc.save('MortgagePlanner-Report.pdf');
+            doc.save(filename);
         }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            initFromURL(); // Handle URL params if they exist
+            updateDownPaymentHelper(); // Run this no matter what to catch defaults or URL updates
+        });
     </script>
 </body>
 </html>
