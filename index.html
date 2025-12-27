@@ -161,7 +161,9 @@
             .app-container { padding: 0 12px; gap: 1.5rem; }
             
             .split-inputs { grid-template-columns: 1fr; gap: 0.75rem; }
-            .three-col-mobile-fix { grid-template-columns: 1fr !important; }
+            
+            /* FIXED: Keep 3 columns on mobile for Annual Increases */
+            .three-col-mobile-fix { grid-template-columns: 1fr 1fr 1fr !important; gap: 0.25rem !important; }
 
             .summary-cards { 
                 grid-template-columns: 1fr !important; 
@@ -208,8 +210,8 @@
         /* --- INPUT STYLING --- */
         .input-group { margin-bottom: 1.25rem; width: 100%; }
         
-        /* Default Label Style */
-        label {
+        /* ALIGNMENT FIX: FORCE LABEL HEIGHTS TO MATCH */
+        label, .label-header {
             display: flex;
             align-items: center;
             font-size: 0.85rem;
@@ -217,6 +219,7 @@
             margin-bottom: 0.4rem;
             color: var(--brand-navy);
             gap: 6px;
+            min-height: 26px; /* Forces all labels to be same height */
         }
 
         /* Helper for the Label Row with Select */
@@ -225,8 +228,9 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 0.4rem;
+            min-height: 26px; /* Matches standard label height */
         }
-        .label-row label { margin-bottom: 0; }
+        .label-row label { margin-bottom: 0; min-height: 0; }
 
         .input-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
 
@@ -576,6 +580,18 @@
                     <button type="submit" class="btn-primary" style="width: auto; margin:0;">Submit Feedback</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <div id="emailSuccessModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <div class="modal-header" style="border-bottom: none; padding-bottom: 0; margin-bottom: 1rem;">Mortgage Planner says:</div>
+            <p style="color: #475569; margin-bottom: 1.5rem; line-height: 1.6;">
+                We tried to open your email app!<br><br>
+                If nothing happened, don't worry—we copied the plan to your clipboard.<br><br>
+                Just open your email and paste into the Email Message.
+            </p>
+            <button class="btn-primary" onclick="closeModal('emailSuccessModal')">OK</button>
         </div>
     </div>
 
@@ -1143,7 +1159,7 @@ ${shareUrl}`;
                 window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
                 
                 // 3. Tell the user what happened
-                alert("We tried to open your email app!\n\nIf nothing happened (common on Macs), don't worry—we also copied the plan to your clipboard.\n\nJust open your email and paste into the Email Message.");
+                openModal('emailSuccessModal');
             });
         }
 
