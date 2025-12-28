@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <title>Mortgage Planner | Shareable Mortgage Calculator & Payoff Tool</title>
-    <meta name="description" content="Create and share custom mortgage plans. Calculate amortization with extra payments and tax increases, then send a live link to your partner or realtor.">
+    <title>Mortgage Planner | Simple Calculator & Payoff Tool</title>
+    <meta name="description" content="A simple, ad-free mortgage calculator. Plan payoff strategies, calculate PMI removal, and share scenarios instantly without signing up.">
     
     <link rel="canonical" href="https://mortgageplanner.net" />
 
@@ -21,7 +21,7 @@
         "price": "0",
         "priceCurrency": "USD"
       },
-      "description": "A shareable mortgage calculator that allows users to create and send custom payoff scenarios via link.",
+      "description": "A simple, shareable mortgage calculator that allows users to create and send custom payoff scenarios via link.",
       "featureList": "Amortization schedule, Shareable scenario links, PMI removal date, Tax increase projection",
       "author": {
         "@type": "Organization",
@@ -32,7 +32,7 @@
     </script>
     
     <meta property="og:site_name" content="Mortgage Planner">
-    <meta property="og:title" content="Mortgage Planner | Shareable Mortgage Calculator">
+    <meta property="og:title" content="Mortgage Planner | Simple Mortgage Calculator">
     <meta property="og:description" content="I built a custom mortgage plan. Click to see the exact numbers, payoff date, and total savings.">
     <meta property="og:url" content="https://mortgageplanner.net">
     <meta property="og:type" content="website">
@@ -51,7 +51,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
@@ -101,6 +101,40 @@
             padding-top: 72px; 
         }
 
+        /* EMBED MODE STYLES */
+        body.embed-mode {
+            padding-top: 0;
+            background-color: transparent;
+        }
+        body.embed-mode nav, 
+        body.embed-mode .hero, 
+        body.embed-mode footer, 
+        body.embed-mode .content-section, 
+        body.embed-mode .coffee-section {
+            display: none !important;
+        }
+        body.embed-mode .app-container {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        /* New Footer for Embed Mode Only */
+        .embed-footer {
+            display: none;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--brand-slate);
+            margin-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        .embed-footer a {
+            color: var(--brand-teal);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        body.embed-mode .embed-footer {
+            display: block;
+        }
+
         /* 2. NAVIGATION */
         nav {
             background: var(--brand-navy);
@@ -128,10 +162,32 @@
         .nav-links a { text-decoration: none; color: #94a3b8; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; cursor: pointer; white-space: nowrap; }
         .nav-links a:hover { color: white; }
 
-        /* 3. HERO */
-        .hero { background: white; padding: 2rem 1.5rem; border-bottom: 1px solid var(--border-color); margin-bottom: 1.5rem; text-align: center; width: 100%; }
-        .hero h1 { font-size: 1.75rem; font-weight: 700; color: var(--brand-navy); margin-bottom: 0.5rem; }
-        .hero p { color: var(--brand-slate); font-size: 1rem; max-width: 600px; margin: 0 auto; line-height: 1.6; }
+        /* 3. HERO (UPDATED FOR SIMPLICITY) */
+        .hero { background: white; padding: 2.5rem 1.5rem; border-bottom: 1px solid var(--border-color); margin-bottom: 1.5rem; text-align: center; width: 100%; }
+        .hero h1 { font-size: 2rem; font-weight: 800; color: var(--brand-navy); margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+        .hero p { color: var(--brand-slate); font-size: 1.1rem; max-width: 600px; margin: 0 auto 1.5rem auto; line-height: 1.6; }
+        
+        /* HERO BADGES */
+        .hero-badges {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        .badge-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: var(--brand-slate);
+            font-weight: 500;
+        }
+        .badge-item svg {
+            width: 16px;
+            height: 16px;
+            color: var(--brand-teal);
+        }
 
         /* 4. LAYOUT */
         .app-container {
@@ -159,7 +215,9 @@
             .nav-container { padding: 0 1rem; } 
             
             .hero { padding: 1.5rem 1rem; }
-            .hero h1 { font-size: 1.5rem; }
+            .hero h1 { font-size: 1.6rem; }
+            .hero p { font-size: 1rem; margin-bottom: 1rem; }
+            .hero-badges { gap: 1rem; }
             
             .app-container { padding: 0 12px; gap: 1.5rem; }
             
@@ -317,30 +375,52 @@
         .otp-add-btn { background: none; border: none; color: var(--brand-teal); font-size: 0.85rem; font-weight: 600; cursor: pointer; padding: 0; display: flex; align-items: center; gap: 4px; }
         .otp-add-btn:hover { text-decoration: underline; }
 
-        /* BUTTONS */
-        .btn-primary { width: 100%; padding: 1rem; background-color: var(--brand-navy); color: white; border: none; border-radius: 6px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: background 0.2s; margin-top: 1rem; }
+        /* BUTTONS - STANDARDIZED */
+        .btn-primary { 
+            width: 100%; 
+            padding: 0.75rem 1.5rem; /* Standardized Padding */
+            background-color: var(--brand-navy); 
+            color: white; 
+            border: 1px solid transparent; /* Match border width of cancel button */
+            border-radius: 6px; 
+            font-weight: 600; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            transition: background 0.2s; 
+            margin-top: 0; /* Remove default margin */
+        }
         .btn-primary:hover { background-color: var(--brand-navy-light); }
+        
+        /* Specific override for the main Calculate button to add spacing */
+        #calcBtn {
+            margin-top: 1rem;
+        }
+
         .btn-secondary { background: transparent; border: 1px solid var(--brand-navy); color: var(--brand-navy); padding: 0.5rem 1rem; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 0.85rem; }
         .btn-secondary:hover { background: #f1f5f9; }
         
-        /* NEW EXAMPLE BUTTON STYLES */
-        .example-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 0.75rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px dashed #e2e8f0;
-        }
-        .example-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        
+        /* UNIFIED "DASHBOARD CARD" STYLE FOR ALL EXAMPLES */
         .btn-example-small { 
-            background: #fff; border: 1px solid var(--border-color); color: var(--brand-teal-dark); 
-            padding: 0.5rem 0.75rem; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.8rem;
-            white-space: nowrap; min-width: 140px; text-align: center;
+            background: white; 
+            border: 1px solid #e2e8f0; 
+            border-left: 4px solid var(--brand-teal); /* Teal Accent Bar */
+            color: var(--brand-navy); 
+            padding: 0.6rem 1rem; 
+            border-radius: 4px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            font-size: 0.85rem;
+            white-space: nowrap; 
+            min-width: 140px; 
+            text-align: left; /* Align text left for card feel */
             transition: all 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
-        .btn-example-small:hover { border-color: var(--brand-teal); background-color: #f0fdfa; transform: translateY(-1px); }
+        .btn-example-small:hover { 
+            border-color: #cbd5e1;
+            background-color: #f8fafc;
+            padding-left: 1.2rem; /* Slide effect */
+        }
         
         .example-desc { font-size: 0.85rem; color: #475569; line-height: 1.4; }
 
@@ -500,7 +580,7 @@
         .month-row { display: none; background-color: white; }
         .month-row.active { display: table-row; }
         .month-row td { padding-left: 24px; font-size: 0.8rem; }
-        .toggle-icon { display: inline-block; width: 16px; text-align: center; transition: transform 0.2s; margin-right: 6px; }
+        .toggle-icon { display: inline-block; width: 16px; text-align: center; transition: transform 0.2s; margin-left: 1rem; flex-shrink: 0; }
         .year-row.expanded .toggle-icon { transform: rotate(90deg); }
         .pmi-drop-row { background-color: #dcfce7 !important; }
         .one-time-row { background-color: #e0e7ff !important; }
@@ -524,7 +604,17 @@
         .modal-overlay.open .modal-content { transform: translateY(0); }
         .modal-header { font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
         .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem; }
-        .btn-cancel { background: transparent; border: 1px solid var(--border-color); color: var(--brand-slate); padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        
+        /* Updated .btn-cancel to match .btn-primary height */
+        .btn-cancel { 
+            background: transparent; 
+            border: 1px solid var(--border-color); 
+            color: var(--brand-slate); 
+            padding: 0.75rem 1.5rem; 
+            border-radius: 6px; 
+            font-weight: 600; 
+            cursor: pointer; 
+        }
         .btn-cancel:hover { background: #f1f5f9; }
 
         /* POLICY TEXT STYLES */
@@ -532,7 +622,7 @@
         .policy-text p { font-size: 0.9rem; color: #475569; margin-bottom: 0.8rem; line-height: 1.6; }
         .policy-text ul { margin-left: 1.5rem; margin-bottom: 1rem; font-size: 0.9rem; color: #475569; }
 
-        /* CONTENT ACCORDIONS */
+        /* CONTENT ACCORDIONS - STYLE 3 (UNIFIED) */
         .content-section {
             max-width: 1100px;
             margin: 0 auto 3rem auto;
@@ -546,19 +636,27 @@
             margin-bottom: 1rem;
         }
         .content-header {
-            padding: 1.5rem;
+            padding: 1.5rem 1.25rem 1.5rem 1.5rem; /* Tweak padding to push arrow right */
             font-weight: 700;
             color: var(--brand-navy);
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #f8fafc;
-            border-bottom: 1px solid transparent;
+            background: white;
+            border-bottom: 1px solid #f1f5f9; /* Subtle divider when closed */
+            border-left: 4px solid var(--brand-teal); /* The Key Feature: Left Accent */
             transition: all 0.2s;
         }
-        .content-header:hover { background: #f1f5f9; }
-        .content-header.active { border-bottom: 1px solid var(--border-color); color: var(--brand-teal-dark); }
+        .content-header:hover { 
+            background: #f8fafc; 
+            padding-left: 1.8rem; /* Slide Effect */
+        }
+        .content-header.active { 
+            background: #f0fdfa; /* Very light teal bg when open */
+            border-left-color: var(--brand-teal-dark); /* Darker accent when open */
+            border-bottom: 1px solid var(--border-color);
+        }
         
         .content-body {
             display: none;
@@ -640,6 +738,28 @@
         </div>
     </div>
 
+    <div id="embedModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">Embed Calculator</div>
+            <div class="policy-text">
+                <p>Add this mortgage planner to your website for free. It's a great value-add for real estate blogs and agent sites.</p>
+                <div style="background:#f8fafc; padding:15px; border-radius:6px; margin: 15px 0;">
+                    <strong style="display:block; margin-bottom:8px; color:var(--brand-navy);">Instructions:</strong>
+                    <ol style="margin-left: 20px; font-size: 0.9rem; color: #475569;">
+                        <li style="margin-bottom:6px;">Copy the code snippet below.</li>
+                        <li>Paste it into an <strong>"HTML Block"</strong> or <strong>"Code Widget"</strong> on your website (WordPress, Wix, Squarespace, etc).</li>
+                    </ol>
+                </div>
+                <label style="font-weight:600; margin-bottom:6px; display:block;">Code Snippet:</label>
+                <textarea id="embedCodeBox" readonly style="width:100%; height:80px; font-family:monospace; font-size:0.85rem; padding:10px; border:1px solid #cbd5e1; border-radius:6px; background:#fff; resize:none;"></textarea>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal('embedModal')">Close</button>
+                <button type="button" class="btn-primary" style="width: auto;" onclick="copyEmbedCode()">Copy Code</button>
+            </div>
+        </div>
+    </div>
+
     <div id="emailSuccessModal" class="modal-overlay">
         <div class="modal-content" style="max-width: 400px; text-align: center;">
             <div class="modal-header" style="border-bottom: none; padding-bottom: 0; margin-bottom: 1rem;">Mortgage Planner says:</div>
@@ -696,8 +816,23 @@
     </div>
 
     <div class="hero">
-        <h1>Plan Your Mortgage. Share Your Strategy.</h1>
-        <p>Don't just calculate payments—plan for tax increases and explore early payoff options. Then, share your custom scenario instantly.</p>
+        <h1>Mortgage Math, Simplified.</h1>
+        <p>No ads. No sign-ups. Just the numbers you need.</p>
+        
+        <div class="hero-badges">
+            <div class="badge-item">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                No Data Collection
+            </div>
+            <div class="badge-item">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                Instant Results
+            </div>
+            <div class="badge-item">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+                Shareable Links
+            </div>
+        </div>
     </div>
 
     <div class="app-container">
@@ -938,6 +1073,10 @@
                 </div>
             </div>
         </div>
+        
+        <div class="embed-footer">
+            Powered by <a href="https://mortgageplanner.net" target="_blank">MortgagePlanner.net</a>
+        </div>
     </div>
 
     <div class="content-section">
@@ -959,7 +1098,7 @@
             </div>
         </div>
 
-        <div class="content-card">
+        <div class="content-card"> 
             <div class="content-header" onclick="toggleContent(this)">
                 <span>Strategies to Save Thousands in Interest</span>
                 <span class="toggle-icon">▼</span>
@@ -1033,7 +1172,7 @@
     <footer>
         <p>© <span id="copyrightYear">2024</span> Mortgage Planner. All rights reserved.</p>
         <div class="footer-links">
-            <a onclick="openModal('privacyModal')">Privacy Policy</a>
+            <a onclick="openModal('embedModal')">Embed Widget</a> <a onclick="openModal('privacyModal')">Privacy Policy</a>
             <a onclick="openModal('termsModal')">Terms of Service</a>
         </div>
         <div class="disclaimer">
@@ -1047,10 +1186,30 @@
 
         // --- GENERIC MODAL FUNCTIONS ---
         function openModal(id) {
+            // Special handling for Embed Modal to generate the code
+            if(id === 'embedModal') {
+                const url = window.location.origin + window.location.pathname;
+                const code = `<iframe src="${url}?mode=embed" width="100%" height="800" frameborder="0" style="border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.05);"></iframe>`;
+                document.getElementById('embedCodeBox').value = code;
+            }
             document.getElementById(id).classList.add('open');
         }
+        
         function closeModal(id) {
             document.getElementById(id).classList.remove('open');
+        }
+
+        // COPY EMBED CODE
+        function copyEmbedCode() {
+            const copyText = document.getElementById("embedCodeBox");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); 
+            navigator.clipboard.writeText(copyText.value).then(() => {
+                const btn = document.querySelector('#embedModal .btn-primary');
+                const originalText = btn.innerText;
+                btn.innerText = "Copied!";
+                setTimeout(() => { btn.innerText = originalText; }, 2000);
+            });
         }
 
         // WRAPPERS FOR SPECIFIC BUTTONS
@@ -1106,6 +1265,12 @@
 
         function initFromURL() {
             const params = new URLSearchParams(window.location.search);
+            
+            // CHECK FOR EMBED MODE
+            if(params.has('mode') && params.get('mode') === 'embed') {
+                document.body.classList.add('embed-mode');
+            }
+
             if(params.size === 0) return;
 
             // Helper to set values
@@ -1897,6 +2062,14 @@ ${shareUrl}`;
             // 5. EXTRA PAYMENTS SECTION (IF ANY)
             y = 75; // Move down for extra section
             
+            // Also include PDF tracking event
+            if(typeof gtag === 'function') {
+                gtag('event', 'click_save_pdf', {
+                    'event_category': 'Engagement',
+                    'event_label': 'PDF Export'
+                });
+            }
+            
             if(getCleanNumber('extraPrincipal') > 0 || getCleanNumber('incTax') > 0 || getCleanNumber('incIns') > 0) {
                 doc.setFont("helvetica", "bold");
                 doc.setTextColor(15, 23, 42); 
@@ -1928,9 +2101,6 @@ ${shareUrl}`;
 
             if(pmiDropMonth > 0) {
                 doc.setTextColor(34, 197, 94); // Green
-                // doc.text(`PMI Estimated Removal: Payment #${pmiDropMonth}`, 14, y+6);
-                // The on-screen text now includes the "drops earlier" logic, so we just print pmiText which has it.
-                // We don't need a separate line unless we want to emphasize it again.
             }
             
             // 7. GENERATE TABLE
