@@ -344,6 +344,7 @@
         /* COFFEE BUTTON */
         .coffee-section { text-align: center; margin-bottom: 3rem; padding: 0 1rem; }
         .coffee-section p { font-size: 0.9rem; color: var(--brand-slate); margin-bottom: 0.75rem; font-weight: 500; }
+        /* ADDED GA TRACKING TO COFFEE BTN VIA JS */
         .btn-coffee { 
             display: inline-flex; align-items: center; gap: 8px;
             background-color: white; border: 1px solid var(--border-color); color: var(--brand-navy); 
@@ -962,7 +963,7 @@
 
     <div class="coffee-section">
         <p>Found this tool helpful?</p>
-        <a href="https://buymeacoffee.com/mortgageplanner" target="_blank" class="btn-coffee">
+        <a href="https://buymeacoffee.com/mortgageplanner" target="_blank" class="btn-coffee" onclick="gtag('event', 'click_coffee', {'event_category': 'Conversion', 'event_label': 'Buy Me Coffee'});">
             ☕ Buy me a coffee
         </a>
     </div>
