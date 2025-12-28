@@ -558,6 +558,63 @@
             overflow: hidden; 
         }
 
+        /* NEW LIFETIME TOTALS BREAKDOWN */
+        .lifetime-totals {
+            margin-bottom: 2rem;
+            background: #fff;
+            border-top: 1px dashed var(--border-color);
+            padding-top: 1.5rem;
+        }
+        .lifetime-header {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--brand-navy);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .lifetime-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 2 columns on mobile */
+            gap: 1rem;
+        }
+        
+        /* 4 Columns on Desktop */
+        @media (min-width: 700px) {
+            .lifetime-grid {
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+            }
+        }
+        
+        .lifetime-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .lifetime-label {
+            font-size: 0.75rem;
+            color: var(--brand-slate);
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        .lifetime-value {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--brand-navy);
+        }
+        .lifetime-total-row {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .lifetime-total-val {
+            font-size: 1.25rem;
+            color: var(--brand-teal-dark);
+            font-weight: 800;
+        }
+
         /* ACCORDION TABLE */
         .table-wrapper {
             max-height: 500px;
@@ -1071,11 +1128,46 @@
                         Loan Principal: <strong id="displayLoanPrincipal">$0</strong>
                     </p>
                     <p id="downPaymentDisplayResult" style="font-size: 0.85rem; color: #64748b; margin-bottom: 4px;"></p>
-                    <p id="pmiStatus" style="font-size:0.8rem; color:#d97706; margin-bottom: 0;"></p>
                 </div>
 
                 <div class="chart-container">
                     <canvas id="myChart"></canvas>
+                </div>
+
+                <p id="pmiStatus" style="font-size:0.8rem; color:#d97706; text-align:center; margin-top: -10px; margin-bottom: 1.5rem;"></p>
+
+                <div class="lifetime-totals">
+                    <div class="lifetime-header">Total Cost Breakdown</div>
+                    <div class="lifetime-grid">
+                        <div class="lifetime-item">
+                            <span class="lifetime-label">Principal</span>
+                            <span class="lifetime-value" id="ltPrincipal">$0</span>
+                        </div>
+                        <div class="lifetime-item">
+                            <span class="lifetime-label">Interest</span>
+                            <span class="lifetime-value" id="ltInterest">$0</span>
+                        </div>
+                        <div class="lifetime-item">
+                            <span class="lifetime-label">Taxes</span>
+                            <span class="lifetime-value" id="ltTax">$0</span>
+                        </div>
+                        <div class="lifetime-item">
+                            <span class="lifetime-label">Insurance</span>
+                            <span class="lifetime-value" id="ltIns">$0</span>
+                        </div>
+                        <div class="lifetime-item" id="ltPMIBox" style="display:none;">
+                            <span class="lifetime-label">PMI</span>
+                            <span class="lifetime-value" id="ltPMI">$0</span>
+                        </div>
+                        <div class="lifetime-item" id="ltHOABox" style="display:none;">
+                            <span class="lifetime-label">HOA</span>
+                            <span class="lifetime-value" id="ltHOA">$0</span>
+                        </div>
+                    </div>
+                    <div class="lifetime-total-row">
+                        <span style="font-size: 0.9rem; font-weight: 600; color: #64748b;">TOTAL LIFETIME COST</span>
+                        <span class="lifetime-total-val" id="ltTotal">$0</span>
+                    </div>
                 </div>
 
                 <div style="margin-bottom: 1rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">
@@ -1762,6 +1854,12 @@ ${shareUrl}`;
                 let newTotalInterest = 0;
                 let newPMITotal = 0; // NEW: Track PMI for strategy
                 let newPayoffMonth = 0;
+                
+                // LIFETIME TOTAL TRACKING
+                let totalLifetimeTax = 0;
+                let totalLifetimeIns = 0;
+                let totalLifetimeHOA = 0;
+                let totalLifetimePMI = 0;
 
                 for(let i=1; i<=n; i++) {
                     const currentYear = Math.ceil(i/12);
@@ -1807,6 +1905,12 @@ ${shareUrl}`;
                     
                     // Track New PMI Total
                     newPMITotal += currentPMI;
+                    
+                    // TRACK LIFETIME TOTALS
+                    totalLifetimeTax += currentMonthlyTax;
+                    totalLifetimeIns += currentMonthlyIns;
+                    totalLifetimeHOA += currentMonthlyHOA;
+                    totalLifetimePMI += currentPMI;
 
                     const monthTotalPay = interest + totalPrincipalPayment + currentMonthlyTax + currentMonthlyIns + currentMonthlyHOA + currentPMI;
 
@@ -1922,6 +2026,33 @@ ${shareUrl}`;
                 document.getElementById('displayPI').innerText = toCurrency(monthlyPI);
                 document.getElementById('displayTaxInsPMI').innerText = toCurrency(monthlyTax + monthlyIns + monthlyPMI + monthlyHOA);
                 document.getElementById('displayLoanPrincipal').innerText = toCurrency(P);
+                
+                // UPDATE LIFETIME TOTALS UI
+                document.getElementById('ltPrincipal').innerText = toCurrency(P);
+                document.getElementById('ltInterest').innerText = toCurrency(newTotalInterest);
+                document.getElementById('ltTax').innerText = toCurrency(totalLifetimeTax);
+                document.getElementById('ltIns').innerText = toCurrency(totalLifetimeIns);
+                
+                // PMI Conditional
+                if(totalLifetimePMI > 0) {
+                    document.getElementById('ltPMIBox').style.display = 'flex';
+                    document.getElementById('ltPMI').innerText = toCurrency(totalLifetimePMI);
+                } else {
+                    document.getElementById('ltPMIBox').style.display = 'none';
+                }
+                
+                // HOA Conditional
+                if(totalLifetimeHOA > 0) {
+                    document.getElementById('ltHOABox').style.display = 'flex';
+                    document.getElementById('ltHOA').innerText = toCurrency(totalLifetimeHOA);
+                } else {
+                    document.getElementById('ltHOABox').style.display = 'none';
+                }
+                
+                // Total Sum
+                const lifetimeGrandTotal = P + newTotalInterest + totalLifetimeTax + totalLifetimeIns + totalLifetimePMI + totalLifetimeHOA;
+                document.getElementById('ltTotal').innerText = toCurrency(lifetimeGrandTotal);
+
 
                 document.getElementById('placeholder').classList.add('hidden');
                 document.getElementById('results').classList.remove('hidden');
@@ -2086,8 +2217,45 @@ ${shareUrl}`;
             doc.setTextColor(13, 148, 136); // Teal color
             doc.text(`Initial Monthly Total: ${totalMonthlyText}`, 110, y+22);
             
-            // 5. EXTRA PAYMENTS SECTION (IF ANY)
-            y = 75; // Move down for extra section
+            // 5. LIFETIME TOTALS (NEW SECTION FOR PDF)
+            y = 70; // Move down below two columns
+            doc.setDrawColor(200, 200, 200);
+            doc.line(14, y-5, 196, y-5); // Horizontal divider
+            
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(15, 23, 42); 
+            doc.text("Lifetime Cost Breakdown:", 14, y);
+            
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.setTextColor(50);
+            y += 6;
+            
+            // Get values from the DOM to ensure consistency
+            const ltPrincipal = document.getElementById('ltPrincipal').innerText;
+            const ltInterest = document.getElementById('ltInterest').innerText;
+            const ltTax = document.getElementById('ltTax').innerText;
+            const ltIns = document.getElementById('ltIns').innerText;
+            const ltTotal = document.getElementById('ltTotal').innerText;
+            
+            let summaryText = `Principal: ${ltPrincipal}   Interest: ${ltInterest}   Taxes: ${ltTax}   Insurance: ${ltIns}`;
+            
+            // Add conditional items if they exist
+            const pmiVal = document.getElementById('ltPMI').innerText;
+            if(pmiVal !== "$0.00" && pmiVal !== "$0") summaryText += `   PMI: ${pmiVal}`;
+            
+            const hoaVal = document.getElementById('ltHOA').innerText;
+            if(hoaVal !== "$0.00" && hoaVal !== "$0") summaryText += `   HOA: ${hoaVal}`;
+            
+            doc.text(summaryText, 14, y);
+            
+            y += 6;
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(13, 148, 136); 
+            doc.text(`TOTAL LIFETIME COST: ${ltTotal}`, 14, y);
+
+            // 6. EXTRA PAYMENTS SECTION (IF ANY)
+            y += 12; // Add space
             
             // Also include PDF tracking event
             if(typeof gtag === 'function') {
@@ -2100,11 +2268,12 @@ ${shareUrl}`;
             if(getCleanNumber('extraPrincipal') > 0 || getCleanNumber('incTax') > 0 || getCleanNumber('incIns') > 0) {
                 doc.setFont("helvetica", "bold");
                 doc.setTextColor(15, 23, 42); 
+                doc.setFontSize(10);
                 doc.text("Assumed Increases & Extra Payments:", 14, y);
                 
                 doc.setFont("helvetica", "normal");
                 doc.setTextColor(50);
-                y += 6;
+                y += 5;
                 
                 let extraText = "";
                 if(getCleanNumber('extraPrincipal') > 0) extraText += `Extra Principal: $${extraPrincipal}/mo.  `;
@@ -2112,10 +2281,10 @@ ${shareUrl}`;
                 if(getCleanNumber('incIns') > 0) extraText += `Ins Increase: ${incIns}%/yr.`;
                 
                 doc.text(extraText, 14, y);
-                y += 10; // Add space after this section
+                y += 8; 
             }
 
-            // 6. PMI STATUS
+            // 7. PMI STATUS
             // Fix PMI Text overlap & encoding
             let pmiText = document.getElementById('pmiStatus').innerText;
             pmiText = pmiText.replace(/≥/g, ">="); 
@@ -2123,6 +2292,7 @@ ${shareUrl}`;
             pmiText = pmiText.replace(/—/g, "-"); 
             
             doc.setFont("helvetica", "italic");
+            doc.setFontSize(9);
             doc.setTextColor(217, 119, 6); // Orange for warning/info
             doc.text(pmiText, 14, y); 
 
@@ -2130,7 +2300,7 @@ ${shareUrl}`;
                 doc.setTextColor(34, 197, 94); // Green
             }
             
-            // 7. GENERATE TABLE
+            // 8. GENERATE TABLE
             const tableData = currentSchedule.map(row => [
                 row.year,
                 row.num,
