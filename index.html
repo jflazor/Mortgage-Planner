@@ -68,6 +68,9 @@
             --brand-slate: #64748b;
             --brand-purple: #8b5cf6;
             --brand-red: #ef4444;
+            --brand-green-bg: #ecfdf5;
+            --brand-green-border: #6ee7b7;
+            --brand-green-text: #065f46;
             
             --bg-body: #f1f5f9;
             --bg-white: #ffffff;
@@ -213,7 +216,7 @@
         .input-group > .label-row {
             display: flex;
             align-items: center;
-            height: 34px; /* Fixed height forces alignment across columns */
+            height: 34px; 
             margin-bottom: 4px;
             font-size: 0.85rem;
             font-weight: 600;
@@ -234,7 +237,7 @@
             font-size: 0.85rem;
             display: flex;
             align-items: center;
-            white-space: nowrap; /* Ensure internal labels don't wrap either */
+            white-space: nowrap; 
         }
 
         /* Helper for the Label Row with Select */
@@ -284,7 +287,7 @@
             color: var(--brand-teal);
             font-weight: 600;
             margin-top: 4px;
-            min-height: 1.2em; /* Keeps layout stable even if empty */
+            min-height: 1.2em; 
         }
 
         .input-row { display: flex; gap: 10px; width: 100%; }
@@ -396,6 +399,49 @@
         .mini-card small { display: block; color: var(--brand-slate); font-size: 0.75rem; margin-bottom: 4px; font-weight: 600; text-transform: uppercase; }
         .mini-card strong { display: block; color: var(--brand-navy); font-size: 1.1rem; font-weight: 700; }
         .mini-card .highlight { color: var(--brand-teal); font-size: 1.25rem; }
+
+        /* SAVINGS IMPACT CARD - UPDATED FOR DESKTOP SLIM */
+        .savings-card {
+            background: var(--brand-green-bg);
+            border: 1px solid var(--brand-green-border);
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            display: none; /* Hidden by default */
+            animation: pulse-card 0.4s ease-out;
+        }
+        .savings-card.visible { display: block; }
+        
+        .savings-header { color: var(--brand-green-text); font-weight: 700; font-size: 1.1rem; margin-bottom: 0.75rem; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .savings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+        .savings-item small { display: block; font-size: 0.75rem; color: #047857; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; }
+        .savings-item strong { display: block; font-size: 1.2rem; color: var(--brand-green-text); font-weight: 800; }
+        /* Removed Footer Date Style as we removed it from HTML */
+
+        /* DESKTOP OPTIMIZATION FOR SAVINGS CARD (Slim Bar) */
+        @media (min-width: 850px) {
+            .savings-card.visible {
+                display: flex; /* Turn into Flex Row */
+                align-items: center;
+                justify-content: center;
+                gap: 3rem;
+                text-align: left;
+                padding: 1rem 1.5rem;
+            }
+            .savings-header {
+                margin-bottom: 0;
+                font-size: 1rem;
+            }
+            .savings-grid {
+                margin-top: 0;
+                display: flex;
+                gap: 3rem;
+                padding: 0 2rem;
+                border-left: 1px solid var(--brand-green-border);
+            }
+            .savings-item { text-align: left; }
+        }
         
         .chart-container { 
             position: relative; 
@@ -446,6 +492,7 @@
             table { font-size: 0.75rem; }
             th, td { padding: 8px 10px; }
             td:first-child, th:first-child { white-space: nowrap; min-width: 80px; }
+            .savings-grid { grid-template-columns: 1fr; gap: 0.75rem; }
         }
 
         .year-row { background-color: #f8fafc; cursor: pointer; font-weight: 600; border-bottom: 1px solid #e2e8f0; }
@@ -838,6 +885,23 @@
                     <div class="mini-card">
                         <small>Taxes, Insurance, & Other Fees</small>
                         <strong id="displayTaxInsPMI">$0</strong>
+                    </div>
+                </div>
+
+                <div id="savingsDisplay" class="savings-card">
+                    <div class="savings-header">
+                        <svg style="width:20px;height:20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                        Early Payoff Strategy
+                    </div>
+                    <div class="savings-grid">
+                        <div class="savings-item">
+                            <small>Interest Saved</small>
+                            <strong id="saveAmount">$0</strong>
+                        </div>
+                        <div class="savings-item">
+                            <small>Time Saved</small>
+                            <strong id="saveTime">0 Years</strong>
+                        </div>
                     </div>
                 </div>
 
@@ -1452,15 +1516,37 @@ ${shareUrl}`;
 
                 const initialTotalMonthly = monthlyPI + currentMonthlyTax + currentMonthlyIns + monthlyPMI + currentMonthlyHOA;
 
-                // --- GENERATE SCHEDULE (ACCORDION LOGIC) ---
+                // --- 1. BASELINE CALCULATION (NO EXTRA PAYMENTS) ---
+                let baselineBalance = P;
+                let baselineTotalInterest = 0;
+                let baselineMonths = 0;
+                
+                // Simple baseline loop to get total interest if user paid minimums
+                // We stop at n (loan term)
+                for(let b=1; b<=n; b++) {
+                    let bInt = baselineBalance * r;
+                    let bPrin = monthlyPI - bInt;
+                    if(bPrin > baselineBalance) bPrin = baselineBalance;
+                    
+                    baselineTotalInterest += bInt;
+                    baselineBalance -= bPrin;
+                    if(baselineBalance <= 0.01) {
+                        baselineMonths = b;
+                        break;
+                    }
+                }
+                if(baselineMonths === 0) baselineMonths = n; // If not paid off early in logic
+
+                // --- 2. NEW CALCULATION (WITH EXTRA PAYMENTS) ---
                 let balance = P;
                 currentSchedule = [];
                 const previewBody = document.getElementById('previewTableBody');
                 let tableHTML = "";
                 
-                // Track Yearly Totals
                 let yearlyInt = 0, yearlyPrin = 0, yearlyTotal = 0;
                 let monthBuffer = [];
+                let newTotalInterest = 0;
+                let newPayoffMonth = 0;
 
                 for(let i=1; i<=n; i++) {
                     const currentYear = Math.ceil(i/12);
@@ -1482,6 +1568,9 @@ ${shareUrl}`;
 
                     balance -= totalPrincipalPayment;
                     if(balance < 0) balance = 0;
+                    
+                    // Track Interest
+                    newTotalInterest += interest;
 
                     // PMI Removal
                     let currentPMI = 0;
@@ -1549,10 +1638,40 @@ ${shareUrl}`;
                         yearlyInt = 0; yearlyPrin = 0; yearlyTotal = 0;
                     }
 
-                    if(balance <= 0.01) break;
+                    if(balance <= 0.01) {
+                        newPayoffMonth = i;
+                        break;
+                    }
                 }
+                
+                // If never paid off in loop (e.g. standard 30 yr), set to N
+                if(newPayoffMonth === 0) newPayoffMonth = n;
 
                 previewBody.innerHTML = tableHTML;
+
+                // --- 3. COMPARE AND SHOW SAVINGS ---
+                const interestSaved = baselineTotalInterest - newTotalInterest;
+                const monthsSaved = baselineMonths - newPayoffMonth;
+                const savingsBox = document.getElementById('savingsDisplay');
+                
+                // Only show if savings are significant (e.g. > $10 or > 0 months)
+                if(interestSaved > 10 || monthsSaved > 0) {
+                    savingsBox.classList.add('visible');
+                    
+                    document.getElementById('saveAmount').innerText = toCurrency(interestSaved);
+                    
+                    // Format Time Saved
+                    const yearsSaved = Math.floor(monthsSaved / 12);
+                    const remMonths = monthsSaved % 12;
+                    let timeString = "";
+                    if(yearsSaved > 0) timeString += `${yearsSaved} Year${yearsSaved>1?'s':''} `;
+                    if(remMonths > 0) timeString += `${remMonths} Month${remMonths>1?'s':''}`;
+                    if(timeString === "") timeString = "0 Months";
+                    document.getElementById('saveTime').innerText = timeString;
+
+                } else {
+                    savingsBox.classList.remove('visible');
+                }
 
                 if(hasPMI && pmiDropMonth > 0) {
                     const dropYear = Math.ceil(pmiDropMonth / 12);
@@ -1672,39 +1791,109 @@ ${shareUrl}`;
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
-            // Get values for dynamic filename
-            const price = getCleanNumber('homePrice');
-            const monthly = document.getElementById('displayTotalMonthly').innerText.replace(/[^0-9.]/g, '');
+            // 1. GATHER ALL INPUT VALUES
+            const price = document.getElementById('homePrice').value;
+            const downPmt = document.getElementById('downPayment').value;
+            const downType = document.getElementById('downPaymentType').value === 'percent' ? '%' : '$';
+            const rate = document.getElementById('interestRate').value;
             const term = document.getElementById('loanTerm').value;
-            const filename = `MortgagePlan_${Math.round(price/1000)}k_${Math.round(monthly)}mo_${term}yr.pdf`;
+            const tax = document.getElementById('annualTax').value;
+            const ins = document.getElementById('annualIns').value;
+            const hoa = document.getElementById('monthlyHOA').value;
+            
+            // Advanced Inputs
+            const extraPrincipal = document.getElementById('extraPrincipal').value;
+            const incTax = document.getElementById('incTax').value;
+            const incIns = document.getElementById('incIns').value;
+            const incHoa = document.getElementById('incHOA').value;
 
+            const monthly = document.getElementById('displayTotalMonthly').innerText.replace(/[^0-9.]/g, '');
+            const principalVal = document.getElementById('displayLoanPrincipal').innerText;
+            const cleanPrice = getCleanNumber('homePrice');
+
+            const filename = `MortgagePlan_${Math.round(cleanPrice/1000)}k_${Math.round(monthly)}mo_${term}yr.pdf`;
+
+            // 2. HEADER
             doc.setFont("helvetica", "bold");
             doc.setTextColor(15, 23, 42); 
             doc.setFontSize(22);
-            doc.text("Mortgage Planner | Official Report", 14, 22);
+            doc.text("Mortgage Planner | Official Report", 14, 20);
+            
+            // 3. LOAN DETAILS SECTION (LEFT COLUMN)
+            doc.setFontSize(11);
+            doc.text("Loan Details:", 14, 32);
             
             doc.setFont("helvetica", "normal");
             doc.setFontSize(10);
-            doc.setTextColor(100);
-            const totalMonthly = document.getElementById('displayTotalMonthly').innerText;
-            doc.text(`Initial Monthly Payment: ${totalMonthly}`, 14, 32);
+            doc.setTextColor(50);
             
-            const principal = document.getElementById('displayLoanPrincipal').innerText;
-            doc.text(`Total Loan Amount Financed: ${principal}`, 14, 38);
-            
-            // Fix PMI Text overlap & encoding
-            let pmiText = document.getElementById('pmiStatus').innerText;
-            // Replace special unicode characters that might break in standard PDF fonts
-            pmiText = pmiText.replace(/≥/g, ">="); 
-            
-            doc.setTextColor(217, 119, 6); 
-            doc.text(pmiText, 14, 46); // Increased spacing (y-axis)
+            let y = 40;
+            doc.text(`Home Price: $${price}`, 14, y);
+            doc.text(`Down Payment: ${downPmt}${downType}`, 14, y+6);
+            doc.text(`Loan Amount: ${principalVal}`, 14, y+12);
+            doc.text(`Interest Rate: ${rate}%`, 14, y+18);
+            doc.text(`Loan Term: ${term} Years`, 14, y+24);
 
-            if(pmiDropMonth > 0) {
-                doc.setTextColor(34, 197, 94); 
-                doc.text(`PMI Estimated Removal: Payment #${pmiDropMonth}`, 14, 52);
+            // 4. EXPENSES SECTION (RIGHT COLUMN)
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(15, 23, 42); 
+            doc.setFontSize(11);
+            doc.text("Monthly Expenses:", 110, 32);
+            
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+            doc.setTextColor(50);
+            
+            const totalMonthlyText = document.getElementById('displayTotalMonthly').innerText;
+            
+            doc.text(`Property Tax (Annual): $${tax}`, 110, y);
+            doc.text(`Home Insurance (Annual): $${ins}`, 110, y+6);
+            doc.text(`HOA Fees (Monthly): $${hoa || 0}`, 110, y+12);
+            
+            // Highlight Total Monthly
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(13, 148, 136); // Teal color
+            doc.text(`Initial Monthly Total: ${totalMonthlyText}`, 110, y+22);
+            
+            // 5. EXTRA PAYMENTS SECTION (IF ANY)
+            y = 75; // Move down for extra section
+            let hasExtras = false;
+            
+            if(getCleanNumber('extraPrincipal') > 0 || getCleanNumber('incTax') > 0 || getCleanNumber('incIns') > 0) {
+                hasExtras = true;
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(15, 23, 42); 
+                doc.text("Assumed Increases & Extra Payments:", 14, y);
+                
+                doc.setFont("helvetica", "normal");
+                doc.setTextColor(50);
+                y += 6;
+                
+                let extraText = "";
+                if(getCleanNumber('extraPrincipal') > 0) extraText += `Extra Principal: $${extraPrincipal}/mo.  `;
+                if(getCleanNumber('incTax') > 0) extraText += `Tax Increase: ${incTax}%/yr.  `;
+                if(getCleanNumber('incIns') > 0) extraText += `Ins Increase: ${incIns}%/yr.`;
+                
+                doc.text(extraText, 14, y);
+                y += 10; // Add space after this section
             }
 
+            // 6. PMI STATUS
+            // Fix PMI Text overlap & encoding
+            let pmiText = document.getElementById('pmiStatus').innerText;
+            pmiText = pmiText.replace(/≥/g, ">="); 
+            
+            doc.setFont("helvetica", "italic");
+            doc.setTextColor(217, 119, 6); // Orange for warning/info
+            doc.text(pmiText, 14, y); 
+
+            if(pmiDropMonth > 0) {
+                doc.setTextColor(34, 197, 94); // Green
+                doc.text(`PMI Estimated Removal: Payment #${pmiDropMonth}`, 14, y+6);
+                y += 6;
+            }
+            
+            // 7. GENERATE TABLE
             const tableData = currentSchedule.map(row => [
                 row.year,
                 row.num,
@@ -1715,7 +1904,7 @@ ${shareUrl}`;
             ]);
 
             doc.autoTable({
-                startY: 60, // Pushed table down to make room for header
+                startY: y + 10, // Dynamic start based on content above
                 head: [['Year', 'Month', 'Interest', 'Principal', 'Total Payment', 'Balance']],
                 body: tableData,
                 theme: 'grid',
