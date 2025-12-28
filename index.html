@@ -161,8 +161,6 @@
             .app-container { padding: 0 12px; gap: 1.5rem; }
             
             .split-inputs { grid-template-columns: 1fr; gap: 0.75rem; }
-            
-            /* FIXED: Keep 3 columns on mobile for Annual Increases */
             .three-col-mobile-fix { grid-template-columns: 1fr 1fr 1fr !important; gap: 0.25rem !important; }
 
             .summary-cards { 
@@ -210,27 +208,40 @@
         /* --- INPUT STYLING --- */
         .input-group { margin-bottom: 1.25rem; width: 100%; }
         
-        /* ALIGNMENT FIX: FORCE LABEL HEIGHTS TO MATCH */
-        label, .label-header {
+        /* UPDATED LABEL STYLING: Force Height Alignment & Prevent Wrap */
+        .input-group > label, 
+        .input-group > .label-row {
             display: flex;
             align-items: center;
+            height: 34px; /* Fixed height forces alignment across columns */
+            margin-bottom: 4px;
             font-size: 0.85rem;
             font-weight: 600;
-            margin-bottom: 0.4rem;
             color: var(--brand-navy);
             gap: 6px;
-            min-height: 26px; /* Forces all labels to be same height */
+        }
+
+        /* Apply white-space: nowrap to prevent text wrapping */
+        label {
+            white-space: nowrap; 
+        }
+
+        /* Reset for the label inside the row so it doesn't double height */
+        .label-row label {
+            margin-bottom: 0;
+            height: auto; 
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            white-space: nowrap; /* Ensure internal labels don't wrap either */
         }
 
         /* Helper for the Label Row with Select */
         .label-row {
-            display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.4rem;
-            min-height: 26px; /* Matches standard label height */
+            width: 100%;
         }
-        .label-row label { margin-bottom: 0; min-height: 0; }
 
         .input-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
 
@@ -871,36 +882,6 @@
         
         <div class="content-card">
             <div class="content-header" onclick="toggleContent(this)">
-                <span>Examples: The Power of Early Payoff</span>
-                <span class="toggle-icon">▼</span>
-            </div>
-            <div class="content-body">
-                <p>Click a button below to instantly apply these scenarios to your current loan details:</p>
-                
-                <div class="example-row">
-                    <button class="btn-example-small" onclick="loadExample('baseline')">Baseline (Reset)</button>
-                    <span class="example-desc">Clear extra payments to see the standard loan path.</span>
-                </div>
-                
-                <div class="example-row">
-                    <button class="btn-example-small" onclick="loadExample('extra100')">+$100 / Month</button>
-                    <span class="example-desc">See how a small monthly habit impacts total interest.</span>
-                </div>
-                
-                <div class="example-row">
-                    <button class="btn-example-small" onclick="loadExample('lumpSum')">Year 3 Bonus</button>
-                    <span class="example-desc">Inject a one-time $10,000 payment in Month 36.</span>
-                </div>
-                
-                <div class="example-row">
-                    <button class="btn-example-small" onclick="loadExample('aggressive')">Aggressive</button>
-                    <span class="example-desc">Add $500/month to slash years off the term.</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="content-card">
-            <div class="content-header" onclick="toggleContent(this)">
                 <span>How to Use This Mortgage Planner</span>
                 <span class="toggle-icon">▼</span>
             </div>
@@ -928,6 +909,36 @@
                     <li><strong>The "13th Payment":</strong> Making one extra full payment per year can reduce a 30-year mortgage to roughly 22-23 years.</li>
                     <li><strong>Recasting:</strong> If you come into a lump sum (like a bonus), apply it as a "One-Time Payment" in this calculator to see how it impacts your timeline.</li>
                 </ul>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <div class="content-header" onclick="toggleContent(this)">
+                <span>Examples: The Power of Early Payoff</span>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="content-body">
+                <p>Click a button below to instantly apply these scenarios to your current loan details:</p>
+                
+                <div class="example-row">
+                    <button class="btn-example-small" onclick="loadExample('baseline')">Baseline (Reset)</button>
+                    <span class="example-desc">Clear extra payments to see the standard loan path.</span>
+                </div>
+                
+                <div class="example-row">
+                    <button class="btn-example-small" onclick="loadExample('extra100')">+$100 / Month</button>
+                    <span class="example-desc">See how a small monthly habit impacts total interest.</span>
+                </div>
+                
+                <div class="example-row">
+                    <button class="btn-example-small" onclick="loadExample('lumpSum')">Year 3 Bonus</button>
+                    <span class="example-desc">Inject a one-time $10,000 payment in Month 36.</span>
+                </div>
+                
+                <div class="example-row">
+                    <button class="btn-example-small" onclick="loadExample('aggressive')">Aggressive</button>
+                    <span class="example-desc">Add $500/month to slash years off the term.</span>
+                </div>
             </div>
         </div>
 
