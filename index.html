@@ -2000,7 +2000,7 @@ ${shareUrl}`;
 
                 if(hasPMI && pmiDropMonth > 0) {
                     const dropYear = Math.ceil(pmiDropMonth / 12);
-                    let pmiText = `* Includes PMI until Month ${pmiDropMonth} (Year ${dropYear})`;
+                    let pmiText = `* Includes ${toCurrency(monthlyPMI)}/mo PMI until Month ${pmiDropMonth} (Year ${dropYear})`;
                     
                     // NEW: Compare PMI drop date vs Baseline
                     if(baselinePMIDropMonth > pmiDropMonth) {
