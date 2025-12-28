@@ -359,7 +359,7 @@
         .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color); }
         .results-header h2 { border: none; padding: 0; margin: 0; }
         
-        /* SCROLL MARGIN FIX - RESET TO 120px */
+        /* SCROLL MARGIN FIX */
         #results { scroll-margin-top: 120px; }
         
         .results-actions { display: flex; gap: 10px; }
@@ -417,8 +417,7 @@
         .savings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
         .savings-item small { display: block; font-size: 0.75rem; color: #047857; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; }
         .savings-item strong { display: block; font-size: 1.2rem; color: var(--brand-green-text); font-weight: 800; }
-        /* Removed Footer Date Style as we removed it from HTML */
-
+        
         /* DESKTOP OPTIMIZATION FOR SAVINGS CARD (Slim Bar) */
         @media (min-width: 850px) {
             .savings-card.visible {
@@ -895,7 +894,7 @@
                     </div>
                     <div class="savings-grid">
                         <div class="savings-item">
-                            <small>Interest Saved</small>
+                            <small>Total Saved</small>
                             <strong id="saveAmount">$0</strong>
                         </div>
                         <div class="savings-item">
@@ -1488,6 +1487,11 @@ ${shareUrl}`;
                         }
                     }
                 });
+                
+                // CHECK FOR EXTRA PAYMENTS (To control Savings Box visibility)
+                let hasExtraPayments = false;
+                if(extraPrincipal > 0) hasExtraPayments = true;
+                if(Object.keys(otpMap).length > 0) hasExtraPayments = true;
 
                 // PMI
                 let monthlyPMI = 0;
@@ -1521,15 +1525,33 @@ ${shareUrl}`;
                 let baselineTotalInterest = 0;
                 let baselineMonths = 0;
                 
+                // Track baseline PMI total
+                let baselinePMITotal = 0;
+                let baselinePMI = monthlyPMI; 
+                let baselinePMIDropMonth = 0; // Capture when it drops in baseline
+
                 // Simple baseline loop to get total interest if user paid minimums
-                // We stop at n (loan term)
                 for(let b=1; b<=n; b++) {
+                    // Update Balance FIRST (Standardize Order)
                     let bInt = baselineBalance * r;
                     let bPrin = monthlyPI - bInt;
                     if(bPrin > baselineBalance) bPrin = baselineBalance;
                     
-                    baselineTotalInterest += bInt;
                     baselineBalance -= bPrin;
+                    
+                    // THEN Check PMI (using new balance)
+                    if (hasPMI) {
+                        if(baselineBalance > (homePrice * 0.8)) {
+                            baselinePMI = monthlyPMI;
+                        } else {
+                            if(baselinePMIDropMonth === 0) baselinePMIDropMonth = b;
+                            baselinePMI = 0;
+                        }
+                        baselinePMITotal += baselinePMI;
+                    }
+                    
+                    baselineTotalInterest += bInt;
+
                     if(baselineBalance <= 0.01) {
                         baselineMonths = b;
                         break;
@@ -1546,6 +1568,7 @@ ${shareUrl}`;
                 let yearlyInt = 0, yearlyPrin = 0, yearlyTotal = 0;
                 let monthBuffer = [];
                 let newTotalInterest = 0;
+                let newPMITotal = 0; // NEW: Track PMI for strategy
                 let newPayoffMonth = 0;
 
                 for(let i=1; i<=n; i++) {
@@ -1589,6 +1612,9 @@ ${shareUrl}`;
                             currentPMI = 0;
                         }
                     }
+                    
+                    // Track New PMI Total
+                    newPMITotal += currentPMI;
 
                     const monthTotalPay = interest + totalPrincipalPayment + currentMonthlyTax + currentMonthlyIns + currentMonthlyHOA + currentPMI;
 
@@ -1649,16 +1675,19 @@ ${shareUrl}`;
 
                 previewBody.innerHTML = tableHTML;
 
-                // --- 3. COMPARE AND SHOW SAVINGS ---
+                // --- 3. COMPARE AND SHOW SAVINGS (Now Includes PMI) ---
                 const interestSaved = baselineTotalInterest - newTotalInterest;
+                const pmiSaved = baselinePMITotal - newPMITotal;
+                const totalMoneySaved = interestSaved + pmiSaved; // Combined Savings
+                
                 const monthsSaved = baselineMonths - newPayoffMonth;
                 const savingsBox = document.getElementById('savingsDisplay');
                 
-                // Only show if savings are significant (e.g. > $10 or > 0 months)
-                if(interestSaved > 10 || monthsSaved > 0) {
+                // Only show if savings are significant AND user entered extras
+                if(hasExtraPayments && (totalMoneySaved > 1 || monthsSaved > 0)) {
                     savingsBox.classList.add('visible');
                     
-                    document.getElementById('saveAmount').innerText = toCurrency(interestSaved);
+                    document.getElementById('saveAmount').innerText = toCurrency(totalMoneySaved);
                     
                     // Format Time Saved
                     const yearsSaved = Math.floor(monthsSaved / 12);
@@ -1675,7 +1704,17 @@ ${shareUrl}`;
 
                 if(hasPMI && pmiDropMonth > 0) {
                     const dropYear = Math.ceil(pmiDropMonth / 12);
-                    document.getElementById('pmiStatus').innerText = `* Includes PMI until Month ${pmiDropMonth} (Year ${dropYear})`;
+                    let pmiText = `* Includes PMI until Month ${pmiDropMonth} (Year ${dropYear})`;
+                    
+                    // NEW: Compare PMI drop date vs Baseline
+                    if(baselinePMIDropMonth > pmiDropMonth) {
+                        const monthsEarlier = baselinePMIDropMonth - pmiDropMonth;
+                        pmiText += ` — drops ${monthsEarlier} months earlier than standard!`;
+                    }
+                    
+                    document.getElementById('pmiStatus').innerText = pmiText;
+                } else if (!hasPMI) {
+                     document.getElementById('pmiStatus').innerText = "No PMI required (Down payment ≥ 20%)";
                 }
 
                 // Update Result Text with Down Payment Amount
@@ -1857,10 +1896,8 @@ ${shareUrl}`;
             
             // 5. EXTRA PAYMENTS SECTION (IF ANY)
             y = 75; // Move down for extra section
-            let hasExtras = false;
             
             if(getCleanNumber('extraPrincipal') > 0 || getCleanNumber('incTax') > 0 || getCleanNumber('incIns') > 0) {
-                hasExtras = true;
                 doc.setFont("helvetica", "bold");
                 doc.setTextColor(15, 23, 42); 
                 doc.text("Assumed Increases & Extra Payments:", 14, y);
@@ -1882,6 +1919,8 @@ ${shareUrl}`;
             // Fix PMI Text overlap & encoding
             let pmiText = document.getElementById('pmiStatus').innerText;
             pmiText = pmiText.replace(/≥/g, ">="); 
+            // Also clean up em-dashes or other special chars that might break jsPDF
+            pmiText = pmiText.replace(/—/g, "-"); 
             
             doc.setFont("helvetica", "italic");
             doc.setTextColor(217, 119, 6); // Orange for warning/info
@@ -1889,8 +1928,9 @@ ${shareUrl}`;
 
             if(pmiDropMonth > 0) {
                 doc.setTextColor(34, 197, 94); // Green
-                doc.text(`PMI Estimated Removal: Payment #${pmiDropMonth}`, 14, y+6);
-                y += 6;
+                // doc.text(`PMI Estimated Removal: Payment #${pmiDropMonth}`, 14, y+6);
+                // The on-screen text now includes the "drops earlier" logic, so we just print pmiText which has it.
+                // We don't need a separate line unless we want to emphasize it again.
             }
             
             // 7. GENERATE TABLE
