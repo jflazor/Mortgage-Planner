@@ -636,7 +636,7 @@
             gap: 1rem;
         }
         
-        /* 4 Columns on Desktop */
+        /* 4 Columns on Desktop (Wide screens only) */
         @media (min-width: 900px) {
             .lifetime-grid {
                 grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -663,8 +663,10 @@
             padding-top: 1rem;
             border-top: 1px solid #f1f5f9;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            /* CHANGED: Bring them close together */
+            justify-content: flex-start; 
+            gap: 2rem; 
         }
         .lifetime-total-val {
             font-size: 1.25rem;
@@ -1077,7 +1079,7 @@
             </div>
 
             <div style="margin-bottom: 1.5rem;">
-                <span id="advancedToggle" class="advanced-link" onclick="toggleAdvanced()">(+) Advanced Options</span>
+                <span id="advancedToggle" class="advanced-link" onclick="toggleAdvanced(); gtag('event', 'click_advanced_toggle', {'event_category': 'Engagement'});">(+) Advanced Options</span>
                 <div id="advancedSection" class="advanced-content hidden">
                     
                     <div class="advanced-sub-header" style="margin-top: 0;">Annual Increases</div>
@@ -1262,7 +1264,7 @@
     </div>
     
     <div class="embed-cta">
-        <a onclick="openModal('embedModal')">
+        <a onclick="openModal('embedModal'); gtag('event', 'click_embed_open', {'event_category': 'Engagement'});">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
             Embed this Calculator on your Website
         </a>
@@ -1399,6 +1401,8 @@
                 btn.innerText = "Copied!";
                 setTimeout(() => { btn.innerText = originalText; }, 2000);
             });
+            // NEW TRACKING
+            gtag('event', 'click_embed_copy', {'event_category': 'Conversion'});
         }
 
         // WRAPPERS FOR SPECIFIC BUTTONS
@@ -1630,6 +1634,9 @@ ${shareUrl}`;
                 document.getElementById('advancedSection').classList.remove('hidden');
                 document.getElementById('advancedToggle').innerText = "(-) Advanced Options";
             }
+            
+            // NEW TRACKING
+            gtag('event', 'click_example_load', {'event_category': 'Engagement', 'event_label': type});
 
             // Run Updates
             updateDownIcon(); 
