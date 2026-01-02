@@ -9,9 +9,9 @@
     
     <link rel="canonical" href="https://mortgageplanner.net" />
 
-    <link rel="icon" href="https://mortgageplanner.net/favicon.png?v=16" type="image/png" sizes="any">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://mortgageplanner.net/favicon.png?v=16">
-    <link rel="icon" sizes="192x192" href="https://mortgageplanner.net/favicon.png?v=16">
+    <link rel="icon" href="https://mortgageplanner.net/favicon.png?v=17" type="image/png" sizes="any">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://mortgageplanner.net/favicon.png?v=17">
+    <link rel="icon" sizes="192x192" href="https://mortgageplanner.net/favicon.png?v=17">
 
     <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIk1vcnRnYWdlIFBsYW5uZXIiLAogICJzaG9ydF9uYW1lIjogIk1vcnRnYWdlIiwKICAic3RhcnRfdXJsIjogImh0dHBzOi8vbW9ydGdhZ2VwbGFubmVyLm5ldCIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2ZmZmZmZiIsCiAgInRoZW1lX2NvbG9yIjogIiMwZjE3MmEiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL21vcnRnYWdlcGxhbm5lci5uZXQvZmF2aWNvbi5wbmciLAogICAgICAic2l6ZXMiOiAiMTkyeDE5MiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIKICAgIH0sCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly9tb3J0Z2FnZXBsYW5uZXIubmV0L2Zhdmljb24ucG5nIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgICB9CiAgXQp9">
 
@@ -20,7 +20,7 @@
     <meta property="og:description" content="I built a custom mortgage plan. Click to see the exact numbers, payoff date, and total savings.">
     <meta property="og:url" content="https://mortgageplanner.net">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="https://mortgageplanner.net/og-image.png?v=16">
+    <meta property="og:image" content="https://mortgageplanner.net/og-image.png?v=17">
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -1653,6 +1653,8 @@
             const newUrl = getShareableLink();
             
             // 1. SILENTLY UPDATE URL BAR
+            // Note: In an iframe, this updates the iframe URL, not the parent window URL (usually restricted).
+            // But it's good practice for standalone use.
             window.history.pushState({}, '', newUrl);
             
             // Track Event
@@ -2387,10 +2389,16 @@
                return;
             }
 
-            // STEP 2: Show a loading message in the new window
-            newWindow.document.write('<html><head><title>Generating PDF...</title></head><body style="display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;background-color:#f1f5f9;"><div><p>Generating your Mortgage Plan...</p></div></body></html>');
+            // --- Updated Step 2: NO "Generating" text. Just prepare structure ---
+            newWindow.document.write(`
+                <html>
+                    <head><title>Mortgage Plan PDF</title></head>
+                    <body style="margin:0; background-color:#f8fafc;">
+                    </body>
+                </html>
+            `);
 
-            // STEP 3: Generate the PDF Blob
+            // STEP 3: Generate the PDF 
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
@@ -2550,22 +2558,18 @@
                 }
             });
 
-            // STEP 4: Inject the PDF Blob into the NEW WINDOW via IFRAME
-            // This tricks the browser into thinking it's just displaying content, not navigating to a file
-            const pdfBlob = doc.output('blob');
-            const blobUrl = URL.createObjectURL(pdfBlob);
+            doc.setProperties({ title: filename });
+
+            // STEP 4: USE DATA URI STRING (WIX FIX)
+            // This bypasses the Blob restriction by embedding the entire file as a text string.
+            const pdfDataUri = doc.output('datauristring');
 
             // Wait a split second to simulate loading, then replace content
             setTimeout(() => {
-                newWindow.document.write(`
-                    <html>
-                        <head><title>${filename}</title></head>
-                        <body style="margin:0;">
-                            <iframe src="${blobUrl}" style="width:100%; height:100vh; border:none;"></iframe>
-                        </body>
-                    </html>
-                `);
-            }, 500);
+                newWindow.document.body.innerHTML = `
+                    <iframe src="${pdfDataUri}" style="width:100%; height:100vh; border:none;"></iframe>
+                `;
+            }, 100);
         }
 
         // Initialize on load
