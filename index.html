@@ -9,9 +9,9 @@
     
     <link rel="canonical" href="https://mortgageplanner.net" />
 
-    <link rel="icon" href="https://mortgageplanner.net/favicon.png?v=13" type="image/png" sizes="any">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://mortgageplanner.net/favicon.png?v=13">
-    <link rel="icon" sizes="192x192" href="https://mortgageplanner.net/favicon.png?v=13">
+    <link rel="icon" href="https://mortgageplanner.net/favicon.png?v=15" type="image/png" sizes="any">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://mortgageplanner.net/favicon.png?v=15">
+    <link rel="icon" sizes="192x192" href="https://mortgageplanner.net/favicon.png?v=15">
 
     <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIk1vcnRnYWdlIFBsYW5uZXIiLAogICJzaG9ydF9uYW1lIjogIk1vcnRnYWdlIiwKICAic3RhcnRfdXJsIjogImh0dHBzOi8vbW9ydGdhZ2VwbGFubmVyLm5ldCIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2ZmZmZmZiIsCiAgInRoZW1lX2NvbG9yIjogIiMwZjE3MmEiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL21vcnRnYWdlcGxhbm5lci5uZXQvZmF2aWNvbi5wbmciLAogICAgICAic2l6ZXMiOiAiMTkyeDE5MiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIKICAgIH0sCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly9tb3J0Z2FnZXBsYW5uZXIubmV0L2Zhdmljb24ucG5nIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgICB9CiAgXQp9">
 
@@ -20,7 +20,7 @@
     <meta property="og:description" content="I built a custom mortgage plan. Click to see the exact numbers, payoff date, and total savings.">
     <meta property="og:url" content="https://mortgageplanner.net">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="https://mortgageplanner.net/og-image.png?v=13">
+    <meta property="og:image" content="https://mortgageplanner.net/og-image.png?v=15">
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -49,11 +49,10 @@
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
-      // Iframe-Optimized Config
       gtag('config', 'G-HPMLZPDC1Z', {
-          'cookie_flags': 'SameSite=None;Secure', // Allows tracking inside Wix iframe
+          'cookie_flags': 'SameSite=None;Secure', 
           'page_location': window.location.href,
-          'page_referrer': document.referrer // Captures the Wix site hosting the widget
+          'page_referrer': document.referrer
       });
     </script>
 
@@ -1653,8 +1652,6 @@
             const newUrl = getShareableLink();
             
             // 1. SILENTLY UPDATE URL BAR
-            // Note: In an iframe, this updates the iframe URL, not the parent window URL (usually restricted).
-            // But it's good practice for standalone use.
             window.history.pushState({}, '', newUrl);
             
             // Track Event
@@ -2378,11 +2375,26 @@
             });
         }
 
+        // --- NEW: Two-Step Export PDF (Bypass Sandbox Blockers) ---
         function exportPDF() {
+            // 1. OPEN WINDOW IMMEDIATELY (Bypasses Popup Blocker)
+            // This needs to happen synchronously with the click event
+            const newWindow = window.open('', '_blank');
+            
+            // Check if the blocker prevented it
+            if (!newWindow) {
+               alert('Please allow popups for this site to view the PDF.');
+               return;
+            }
+
+            // 2. Set a temporary "Loading" message
+            newWindow.document.write('<html><head><title>Generating PDF...</title></head><body style="display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;background-color:#f1f5f9;"><div><p>Generating your Mortgage Plan...</p></div></body></html>');
+
+            // 3. Generate PDF (Standard jsPDF logic)
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
-            // 1. GATHER ALL INPUT VALUES
+            // --- PDF GENERATION LOGIC (Same as before) ---
             const price = document.getElementById('homePrice').value;
             const downPmt = document.getElementById('downPayment').value;
             const downType = document.getElementById('downPaymentType').value === 'percent' ? '%' : '$';
@@ -2392,7 +2404,6 @@
             const ins = document.getElementById('annualIns').value;
             const hoa = document.getElementById('monthlyHOA').value;
             
-            // Advanced Inputs
             const extraPrincipal = document.getElementById('extraPrincipal').value;
             const incTax = document.getElementById('incTax').value;
             const incIns = document.getElementById('incIns').value;
@@ -2404,13 +2415,12 @@
 
             const filename = `MortgagePlan_${Math.round(cleanPrice/1000)}k_${Math.round(monthly)}mo_${term}yr.pdf`;
 
-            // 2. HEADER
+            // ... PDF Content Generation (Header, Details, Table etc.) ...
             doc.setFont("helvetica", "bold");
             doc.setTextColor(15, 23, 42); 
             doc.setFontSize(22);
             doc.text("Mortgage Planner | Official Report", 14, 20);
             
-            // 3. LOAN DETAILS SECTION (LEFT COLUMN)
             doc.setFontSize(11);
             doc.text("Loan Details:", 14, 32);
             
@@ -2425,7 +2435,6 @@
             doc.text(`Interest Rate: ${rate}%`, 14, y+18);
             doc.text(`Loan Term: ${term} Years`, 14, y+24);
 
-            // 4. MONTHLY EXPENSES SECTION (RIGHT COLUMN - UPDATED)
             doc.setFont("helvetica", "bold");
             doc.setTextColor(15, 23, 42); 
             doc.setFontSize(11);
@@ -2440,28 +2449,24 @@
             doc.text(`Home Insurance (Annual): $${ins}`, 110, rightY+6);
             doc.text(`HOA Fees (Monthly): $${hoa || 0}`, 110, rightY+12);
             
-            rightY += 18; // Move cursor down
+            rightY += 18;
             
-            // CHECK FOR PMI IN GLOBAL SCHEDULE
             if(currentSchedule.length > 0 && currentSchedule[0].pmi > 0) {
                  const pmiVal = currentSchedule[0].pmi;
                  const dropYear = Math.ceil(pmiDropMonth / 12);
                  doc.text(`PMI: ${toCurrency(pmiVal)} until Month ${pmiDropMonth} (Year ${dropYear})`, 110, rightY);
-                 rightY += 6; // Push total down if PMI exists
+                 rightY += 6; 
             }
 
             const totalMonthlyText = document.getElementById('displayTotalMonthly').innerText;
             
-            // Highlight Total Monthly
             doc.setFont("helvetica", "bold");
-            doc.setTextColor(13, 148, 136); // Teal color
-            // Add a little extra breathing room before the total
+            doc.setTextColor(13, 148, 136); 
             doc.text(`Initial Monthly Total: ${totalMonthlyText}`, 110, rightY + 4);
             
-            // 5. LIFETIME TOTALS
-            y = 75; // Start lower to clear the columns
+            y = 75; 
             doc.setDrawColor(200, 200, 200);
-            doc.line(14, y-5, 196, y-5); // Horizontal divider
+            doc.line(14, y-5, 196, y-5); 
             
             doc.setFont("helvetica", "bold");
             doc.setTextColor(15, 23, 42); 
@@ -2472,7 +2477,6 @@
             doc.setTextColor(50);
             y += 6;
             
-            // Get values from the DOM
             const ltPrincipal = document.getElementById('ltPrincipal').innerText;
             const ltInterest = document.getElementById('ltInterest').innerText;
             const ltTax = document.getElementById('ltTax').innerText;
@@ -2494,8 +2498,6 @@
             doc.setTextColor(13, 148, 136); 
             doc.text(`TOTAL LIFETIME COST: ${ltTotal}`, 14, y);
 
-            // 6. EXTRA PAYMENTS SECTION (If Any)
-            // Removed extra spacing here to tighten layout
             y += 8; 
             
             if(typeof gtag === 'function') {
@@ -2521,11 +2523,8 @@
                 if(getCleanNumber('incIns') > 0) extraText += `Ins Increase: ${incIns}%/yr.`;
                 
                 doc.text(extraText, 14, y);
-                y += 6; // Reduced spacing after this block
+                y += 6;
             }
-
-            // 7. GENERATE TABLE
-            // Previous PMI Status text removed to bring table closer
             
             const tableData = currentSchedule.map(row => [
                 row.year,
@@ -2538,7 +2537,7 @@
             ]);
 
             doc.autoTable({
-                startY: y + 2, // Very tight spacing to the previous element
+                startY: y + 2, 
                 head: [['Year', 'Month', 'Interest', 'Principal', 'Tax/Ins/Fees', 'Total', 'Balance']],
                 body: tableData,
                 theme: 'grid',
@@ -2551,13 +2550,17 @@
                 }
             });
 
-            // FINAL SOLUTION FOR WIX PDF: Open generated Blob in NEW WINDOW for PRINTING/SAVING
-            // Direct downloads are often blocked in sandboxed iframes.
-            // Opening a new window with the PDF data lets the user use the browser's native "Save" or "Print".
+            // 4. Set Metadata
             doc.setProperties({ title: filename });
+
+            // 5. Output Blob and Navigate the New Window
             const pdfBlob = doc.output('blob');
             const blobUrl = URL.createObjectURL(pdfBlob);
-            window.open(blobUrl, '_blank');
+
+            // Slight delay to ensure the window is ready (and mimics the "second later" the user mentioned)
+            setTimeout(() => {
+               newWindow.location.href = blobUrl;
+            }, 500);
         }
 
         // Initialize on load
