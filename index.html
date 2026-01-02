@@ -9,9 +9,9 @@
     
     <link rel="canonical" href="https://mortgageplanner.net" />
 
-    <link rel="icon" href="https://mortgageplanner.net/favicon.png?v=2" type="image/png" sizes="any">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://mortgageplanner.net/favicon.png?v=2">
-    <link rel="icon" sizes="192x192" href="https://mortgageplanner.net/favicon.png?v=2">
+    <link rel="icon" href="https://mortgageplanner.net/favicon.png?v=4" type="image/png" sizes="any">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://mortgageplanner.net/favicon.png?v=4">
+    <link rel="icon" sizes="192x192" href="https://mortgageplanner.net/favicon.png?v=4">
 
     <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIk1vcnRnYWdlIFBsYW5uZXIiLAogICJzaG9ydF9uYW1lIjogIk1vcnRnYWdlIiwKICAic3RhcnRfdXJsIjogImh0dHBzOi8vbW9ydGdhZ2VwbGFubmVyLm5ldCIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2ZmZmZmZiIsCiAgInRoZW1lX2NvbG9yIjogIiMwZjE3MmEiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL21vcnRnYWdlcGxhbm5lci5uZXQvZmF2aWNvbi5wbmciLAogICAgICAic2l6ZXMiOiAiMTkyeDE5MiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIKICAgIH0sCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly9tb3J0Z2FnZXBsYW5uZXIubmV0L2Zhdmljb24ucG5nIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgICB9CiAgXQp9">
 
@@ -20,7 +20,7 @@
     <meta property="og:description" content="I built a custom mortgage plan. Click to see the exact numbers, payoff date, and total savings.">
     <meta property="og:url" content="https://mortgageplanner.net">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="https://mortgageplanner.net/og-image.png?v=2">
+    <meta property="og:image" content="https://mortgageplanner.net/og-image.png?v=4">
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -1196,7 +1196,7 @@
             <button id="calcBtn" class="btn-primary" onclick="calculate()">Plan Your Payment</button>
 
             <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 10px;">
-                <button onclick="shareSite()" class="btn-secondary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 0.8rem; background-color: #f1f5f9; border-color: #cbd5e1;">
+                <button onclick="shareSite()" class="btn-secondary" id="shareBtn" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 0.8rem; background-color: #f1f5f9; border-color: #cbd5e1;">
                     <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
                     Share this Plan
                 </button>
@@ -1466,7 +1466,9 @@
                 setTimeout(() => { btn.innerText = originalText; }, 2000);
             });
             // NEW TRACKING
-            gtag('event', 'click_embed_copy', {'event_category': 'Conversion'});
+            if(typeof gtag === 'function') {
+                gtag('event', 'click_embed_copy', {'event_category': 'Conversion'});
+            }
         }
 
         // WRAPPERS FOR SPECIFIC BUTTONS
@@ -1577,10 +1579,16 @@
             calculate();
         }
 
-        // NATIVE SHARE FUNCTION
+        // ---- IFRAME-SAFE SHARE FUNCTIONS ----
+
         function shareSite() {
+            // Focus helps in some iframe contexts
+            window.focus();
+            if(document.activeElement) document.activeElement.blur();
+            
             const shareUrl = getShareableLink();
-            const price = document.getElementById('homePrice').value;
+            const btn = document.getElementById('shareBtn'); // Assuming you add id="shareBtn" to the button
+            const originalText = btn ? btn.innerText : "Share this Plan";
             
             // Track Event
             if(typeof gtag === 'function') {
@@ -1590,25 +1598,44 @@
                 });
             }
 
+            // Try modern share first (works on mobile often)
             if (navigator.share) {
                 navigator.share({
                     title: 'Mortgage Plan',
-                    text: `Check out this mortgage plan for a $${price} home:`,
+                    text: 'Check out this mortgage plan',
                     url: shareUrl
-                })
-                .catch((error) => console.log('Error sharing', error));
+                }).catch(err => {
+                    // Fallback to Clipboard if share fails/cancelled
+                    copyToClipboardFallback(shareUrl, btn, originalText);
+                });
             } else {
-                // Fallback for desktops
-                navigator.clipboard.writeText(shareUrl);
-                alert('Specific plan link copied to clipboard! You can paste this in an email or text.');
+                // Desktop Fallback
+                copyToClipboardFallback(shareUrl, btn, originalText);
             }
         }
 
-        // SMART BOOKMARK FUNCTION (Forces URL Update first)
+        function copyToClipboardFallback(text, btn, originalText) {
+             navigator.clipboard.writeText(text).then(() => {
+                if(btn) {
+                    btn.innerHTML = `
+                        <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        Link Copied!
+                    `;
+                    setTimeout(() => { btn.innerText = originalText; }, 2000);
+                } else {
+                    alert("Link copied to clipboard!");
+                }
+            }).catch(err => {
+                alert("Could not copy link automatically. Please copy the URL from the address bar.");
+            });
+        }
+
         function bookmarkPlan() {
             const newUrl = getShareableLink();
             
             // 1. SILENTLY UPDATE URL BAR
+            // Note: In an iframe, this updates the iframe URL, not the parent window URL (usually restricted).
+            // But it's good practice for standalone use.
             window.history.pushState({}, '', newUrl);
             
             // Track Event
@@ -1622,13 +1649,13 @@
             alert('Your custom scenario is now in the address bar.\n\nPress Ctrl+D (Windows) or Cmd+D (Mac) to bookmark this specific plan!');
         }
 
-        // UPDATED EMAIL FUNCTION (Smart Fallback)
+        // IFRAME-SAFE EMAIL FUNCTION
         function emailPlan() {
             const shareUrl = getShareableLink();
             const totalMonthly = document.getElementById('displayTotalMonthly').innerText;
             const principal = document.getElementById('displayLoanPrincipal').innerText;
-            const price = document.getElementById('homePrice').value; // Get price for Subject Line
-            const term = document.getElementById('loanTerm').value; // Get Term
+            const price = document.getElementById('homePrice').value; 
+            const term = document.getElementById('loanTerm').value; 
             
             // Track Event
             if(typeof gtag === 'function') {
@@ -1638,25 +1665,19 @@
                 });
             }
 
-            // DYNAMIC SUBJECT LINE
             const subject = `Mortgage Planner | $${price} home, ${totalMonthly}/mo, ${term} yr.`;
+            const body = `Here is the mortgage plan I calculated using Mortgage Planner:%0D%0A%0D%0ALoan Amount: ${principal}%0D%0AInitial Monthly Payment: ${totalMonthly}%0D%0A%0D%0AClick this link to see the full interactive breakdown (taxes, HOA, and extra payments included):%0D%0A${encodeURIComponent(shareUrl)}`;
+
+            // METHOD 2: INVISIBLE LINK CLICK (Most Robust for avoiding blank tabs)
+            const link = document.createElement('a');
+            link.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${body}`;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
             
-            const body = `Here is the mortgage plan I calculated using Mortgage Planner:
-
-Loan Amount: ${principal}
-Initial Monthly Payment: ${totalMonthly}
-
-Click this link to see the full interactive breakdown (taxes, HOA, and extra payments included):
-${shareUrl}`;
-
-            // 1. Copy to clipboard AUTOMATICALLY (as a backup)
-            navigator.clipboard.writeText(body).then(() => {
-                // 2. Try to open the mail client
-                window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-                
-                // 3. Tell the user what happened
-                openModal('emailSuccessModal');
-            });
+            // Show Success Modal
+            openModal('emailSuccessModal');
         }
 
         // --- NEW: EXAMPLE LOADER FUNCTION (PRESERVES USER INPUTS) ---
@@ -1700,7 +1721,9 @@ ${shareUrl}`;
             }
             
             // NEW TRACKING
-            gtag('event', 'click_example_load', {'event_category': 'Engagement', 'event_label': type});
+            if(typeof gtag === 'function') {
+                gtag('event', 'click_example_load', {'event_category': 'Engagement', 'event_label': type});
+            }
 
             // Run Updates
             updateDownIcon(); 
