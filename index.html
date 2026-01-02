@@ -9,9 +9,9 @@
     
     <link rel="canonical" href="https://mortgageplanner.net" />
 
-    <link rel="icon" href="https://mortgageplanner.net/favicon.png?v=4" type="image/png" sizes="any">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://mortgageplanner.net/favicon.png?v=4">
-    <link rel="icon" sizes="192x192" href="https://mortgageplanner.net/favicon.png?v=4">
+    <link rel="icon" href="https://mortgageplanner.net/favicon.png?v=5" type="image/png" sizes="any">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://mortgageplanner.net/favicon.png?v=5">
+    <link rel="icon" sizes="192x192" href="https://mortgageplanner.net/favicon.png?v=5">
 
     <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIk1vcnRnYWdlIFBsYW5uZXIiLAogICJzaG9ydF9uYW1lIjogIk1vcnRnYWdlIiwKICAic3RhcnRfdXJsIjogImh0dHBzOi8vbW9ydGdhZ2VwbGFubmVyLm5ldCIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2ZmZmZmZiIsCiAgInRoZW1lX2NvbG9yIjogIiMwZjE3MmEiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL21vcnRnYWdlcGxhbm5lci5uZXQvZmF2aWNvbi5wbmciLAogICAgICAic2l6ZXMiOiAiMTkyeDE5MiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIKICAgIH0sCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly9tb3J0Z2FnZXBsYW5uZXIubmV0L2Zhdmljb24ucG5nIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgICB9CiAgXQp9">
 
@@ -20,7 +20,7 @@
     <meta property="og:description" content="I built a custom mortgage plan. Click to see the exact numbers, payoff date, and total savings.">
     <meta property="og:url" content="https://mortgageplanner.net">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="https://mortgageplanner.net/og-image.png?v=4">
+    <meta property="og:image" content="https://mortgageplanner.net/og-image.png?v=5">
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -1615,19 +1615,33 @@
         }
 
         function copyToClipboardFallback(text, btn, originalText) {
-             navigator.clipboard.writeText(text).then(() => {
-                if(btn) {
-                    btn.innerHTML = `
-                        <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                        Link Copied!
-                    `;
-                    setTimeout(() => { btn.innerText = originalText; }, 2000);
+            // Robust clipboard copy using deprecated execCommand for iframes
+             const textArea = document.createElement("textarea");
+             textArea.value = text;
+             textArea.style.position = "fixed";  //avoid scrolling to bottom
+             document.body.appendChild(textArea);
+             textArea.focus();
+             textArea.select();
+             
+             try {
+                var successful = document.execCommand('copy');
+                if(successful) {
+                    if(btn) {
+                        btn.innerHTML = `
+                            <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            Link Copied!
+                        `;
+                        setTimeout(() => { btn.innerText = originalText; }, 2000);
+                    } else {
+                        alert("Link copied to clipboard!");
+                    }
                 } else {
-                    alert("Link copied to clipboard!");
+                    alert("Could not copy link automatically. Please copy the URL from the address bar.");
                 }
-            }).catch(err => {
-                alert("Could not copy link automatically. Please copy the URL from the address bar.");
-            });
+             } catch (err) {
+                 alert("Could not copy link automatically. Please copy the URL from the address bar.");
+             }
+             document.body.removeChild(textArea);
         }
 
         function bookmarkPlan() {
@@ -1649,7 +1663,7 @@
             alert('Your custom scenario is now in the address bar.\n\nPress Ctrl+D (Windows) or Cmd+D (Mac) to bookmark this specific plan!');
         }
 
-        // IFRAME-SAFE EMAIL FUNCTION
+        // IFRAME-SAFE EMAIL FUNCTION (FIXED)
         function emailPlan() {
             const shareUrl = getShareableLink();
             const totalMonthly = document.getElementById('displayTotalMonthly').innerText;
@@ -1666,17 +1680,41 @@
             }
 
             const subject = `Mortgage Planner | $${price} home, ${totalMonthly}/mo, ${term} yr.`;
-            const body = `Here is the mortgage plan I calculated using Mortgage Planner:%0D%0A%0D%0ALoan Amount: ${principal}%0D%0AInitial Monthly Payment: ${totalMonthly}%0D%0A%0D%0AClick this link to see the full interactive breakdown (taxes, HOA, and extra payments included):%0D%0A${encodeURIComponent(shareUrl)}`;
+            const body = `Here is the mortgage plan I calculated using Mortgage Planner:\n\nLoan Amount: ${principal}\nInitial Monthly Payment: ${totalMonthly}\n\nClick this link to see the full interactive breakdown (taxes, HOA, and extra payments included):\n${shareUrl}`;
 
-            // METHOD 2: INVISIBLE LINK CLICK (Most Robust for avoiding blank tabs)
+            // 1. FORCE COPY TO CLIPBOARD (Robust Method for Iframes)
+            const textArea = document.createElement("textarea");
+            textArea.value = body;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            textArea.style.top = "0";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+            } catch (err) {
+                console.error('Fallback copy failed', err);
+            }
+            
+            document.body.removeChild(textArea);
+
+            // 2. OPEN EMAIL CLIENT (Using Invisible Link Click)
+            // This is safer than window.location.href or window.open in some restrictive iframes
+            const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
             const link = document.createElement('a');
-            link.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${body}`;
+            link.href = mailtoLink;
             link.style.display = 'none';
             document.body.appendChild(link);
             link.click();
-            document.body.removeChild(link);
             
-            // Show Success Modal
+            // Cleanup
+            setTimeout(function() {
+                document.body.removeChild(link);
+            }, 100);
+            
+            // 3. SHOW SUCCESS MODAL
             openModal('emailSuccessModal');
         }
 
