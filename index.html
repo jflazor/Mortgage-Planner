@@ -133,7 +133,7 @@
 
         /* Override 4-col lifetime totals to be 2-col in embed unless really wide */
         body.embed-mode .lifetime-grid {
-            grid-template-columns: 1fr 1fr !important;
+            grid-template-columns: 1fr 1fr 1fr 1fr !important;
         }
         @media (min-width: 900px) {
             body.embed-mode .lifetime-grid {
@@ -378,12 +378,38 @@
         /* TOOLTIPS */
         .tooltip-icon { cursor: help; color: var(--brand-slate); width: 14px; height: 14px; }
         .tooltip-container { position: relative; display: flex; align-items: center; }
+        
+        /* UPDATED TOOLTIP CSS FOR WRAPPING */
         .tooltip-text {
-            visibility: hidden; width: 200px; background-color: var(--brand-navy); color: #fff; text-align: center;
-            border-radius: 6px; padding: 8px; position: absolute; z-index: 10; bottom: 125%; left: 50%;
-            margin-left: -100px; opacity: 0; transition: opacity 0.3s; font-size: 0.75rem; font-weight: 400;
-            line-height: 1.4; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            visibility: hidden; 
+            width: 220px; /* Slightly wider */
+            background-color: var(--brand-navy); 
+            color: #fff; 
+            text-align: center;
+            border-radius: 6px; 
+            padding: 8px; 
+            position: absolute; 
+            z-index: 10; 
+            bottom: 125%; 
+            left: 50%;
+            margin-left: -110px; /* Center alignment based on new width */
+            opacity: 0; 
+            transition: opacity 0.3s; 
+            font-size: 0.75rem; 
+            font-weight: 400;
+            line-height: 1.4; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            white-space: normal; /* CRITICAL FIX: Allows text to wrap */
         }
+        
+        /* NEW FIX: Specifically for tooltips near the right edge (like HOA) */
+        .tooltip-text.shift-left {
+            left: auto;
+            right: -10px;       /* Anchors right side of tooltip near the icon */
+            margin-left: 0;     /* Removes the centering margin */
+            transform: none; 
+        }
+        
         .tooltip-container:hover .tooltip-text { visibility: visible; opacity: 1; }
 
         /* ADVANCED SECTION */
@@ -658,20 +684,45 @@
             font-weight: 700;
             color: var(--brand-navy);
         }
+        
+        /* UPDATED LIFETIME TOTAL ROW FOR MOBILE & DESKTOP */
         .lifetime-total-row {
             margin-top: 1rem;
             padding-top: 1rem;
             border-top: 1px solid #f1f5f9;
             display: flex;
             align-items: center;
-            /* CHANGED: Bring them close together */
-            justify-content: flex-start; 
-            gap: 2rem; 
+            justify-content: space-between; /* Default Mobile: Push items to edges */
+            gap: 10px; /* Smaller gap to prevent wrapping */
         }
+        
+        /* Desktop: Bring them closer together */
+        @media (min-width: 600px) {
+            .lifetime-total-row {
+                justify-content: flex-start; /* Left align */
+                gap: 2rem; /* Reasonable gap */
+            }
+        }
+        
+        /* New class to replace inline styles for better mobile control */
+        .lifetime-total-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #64748b;
+            white-space: nowrap; /* Forces text to stay on one line */
+        }
+
         .lifetime-total-val {
             font-size: 1.25rem;
             color: var(--brand-teal-dark);
             font-weight: 800;
+            white-space: nowrap; /* Forces text to stay on one line */
+        }
+
+        /* Mobile specific shrink to fit large millions */
+        @media (max-width: 400px) {
+            .lifetime-total-label { font-size: 0.75rem; }
+            .lifetime-total-val { font-size: 1rem; }
         }
 
         /* ACCORDION TABLE */
@@ -1068,7 +1119,7 @@
                         Monthly HOA
                         <div class="tooltip-container">
                             <svg class="tooltip-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            <span class="tooltip-text">Homeowners Association fees are separate from your mortgage but impact affordability.</span>
+                            <span class="tooltip-text shift-left">Homeowners Association fees are separate from your mortgage but impact affordability.</span>
                         </div>
                     </label>
                     <div class="input-wrapper">
@@ -1086,15 +1137,24 @@
                     <div class="split-inputs three-col-mobile-fix" style="grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; margin-bottom: 1.5rem;">
                         <div class="input-group" style="margin-bottom:0;">
                             <label style="font-size: 0.75rem;">Tax %</label>
-                            <input type="number" id="incTax" value="0" step="0.1">
+                            <div class="input-wrapper">
+                                <input type="number" id="incTax" class="has-right-icon" value="0" step="0.1">
+                                <span class="input-icon right">%</span>
+                            </div>
                         </div>
                         <div class="input-group" style="margin-bottom:0;">
                             <label style="font-size: 0.75rem;">Ins. %</label>
-                            <input type="number" id="incIns" value="0" step="0.1">
+                            <div class="input-wrapper">
+                                <input type="number" id="incIns" class="has-right-icon" value="0" step="0.1">
+                                <span class="input-icon right">%</span>
+                            </div>
                         </div>
                         <div class="input-group" style="margin-bottom:0;">
                             <label style="font-size: 0.75rem;">HOA %</label>
-                            <input type="number" id="incHOA" value="0" step="0.1">
+                            <div class="input-wrapper">
+                                <input type="number" id="incHOA" class="has-right-icon" value="0" step="0.1">
+                                <span class="input-icon right">%</span>
+                            </div>
                         </div>
                     </div>
 
@@ -1234,7 +1294,7 @@
                         </div>
                     </div>
                     <div class="lifetime-total-row">
-                        <span style="font-size: 0.9rem; font-weight: 600; color: #64748b;">TOTAL LIFETIME COST</span>
+                        <span class="lifetime-total-label">TOTAL LIFETIME COST</span>
                         <span class="lifetime-total-val" id="ltTotal">$0</span>
                     </div>
                 </div>
@@ -1251,12 +1311,13 @@
                                 <th>Year / Month</th>
                                 <th>Interest</th>
                                 <th>Principal</th>
+                                <th>Tax, Ins. & Fees</th>
                                 <th>Total Pmt</th>
                                 <th>Balance</th>
                             </tr>
                         </thead>
                         <tbody id="previewTableBody">
-                            </tbody>
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -1711,10 +1772,18 @@ ${shareUrl}`;
         function updateDownPaymentHelper() {
             const type = document.getElementById('downPaymentType').value;
             const helper = document.getElementById('downPaymentHelper');
+            const input = document.getElementById('downPayment');
             
             if (type === 'percent') {
                 const price = getCleanNumber('homePrice');
-                const percent = getCleanNumber('downPayment');
+                let percent = getCleanNumber('downPayment');
+                
+                // NEW: Auto-correct if user types > 99
+                if (percent > 99) {
+                    percent = 99;
+                    input.value = "99";
+                }
+
                 if (price > 0 && percent > 0) {
                     const amount = price * (percent / 100);
                     // UPDATE: Changed text format here
@@ -1813,8 +1882,16 @@ ${shareUrl}`;
                 const downVal = getCleanNumber('downPayment');
                 const downType = document.getElementById('downPaymentType').value;
                 let downAmount = 0;
+                
+                // SAFETY CHECK: Ensure percent doesn't exceed 99 on calculation either
                 if(downType === 'percent') {
-                    downAmount = homePrice * (downVal / 100);
+                    if(downVal > 99) {
+                        alert("Down payment percentage cannot exceed 99%.");
+                        document.getElementById('downPayment').value = "99";
+                        downAmount = homePrice * 0.99;
+                    } else {
+                        downAmount = homePrice * (downVal / 100);
+                    }
                 } else {
                     downAmount = downVal;
                 }
@@ -1927,7 +2004,7 @@ ${shareUrl}`;
                 const previewBody = document.getElementById('previewTableBody');
                 let tableHTML = "";
                 
-                let yearlyInt = 0, yearlyPrin = 0, yearlyTotal = 0;
+                let yearlyInt = 0, yearlyPrin = 0, yearlyFees = 0, yearlyTotal = 0;
                 let monthBuffer = [];
                 let newTotalInterest = 0;
                 let newPMITotal = 0; // NEW: Track PMI for strategy
@@ -1990,11 +2067,13 @@ ${shareUrl}`;
                     totalLifetimeHOA += currentMonthlyHOA;
                     totalLifetimePMI += currentPMI;
 
-                    const monthTotalPay = interest + totalPrincipalPayment + currentMonthlyTax + currentMonthlyIns + currentMonthlyHOA + currentPMI;
+                    const monthlyFees = currentMonthlyTax + currentMonthlyIns + currentMonthlyHOA + currentPMI;
+                    const monthTotalPay = interest + totalPrincipalPayment + monthlyFees;
 
                     // Add to Totals
                     yearlyInt += interest;
                     yearlyPrin += totalPrincipalPayment;
+                    yearlyFees += monthlyFees;
                     yearlyTotal += monthTotalPay;
 
                     const rowData = {
@@ -2002,6 +2081,7 @@ ${shareUrl}`;
                         year: currentYear,
                         int: interest,
                         prin: totalPrincipalPayment,
+                        fees: monthlyFees,
                         bal: balance,
                         total: monthTotalPay,
                         pmi: currentPMI
@@ -2014,6 +2094,7 @@ ${shareUrl}`;
                             <td>Month ${i} ${rowData.pmi===0 && pmiDropMonth===i ? '(PMI Removed)' : ''}</td>
                             <td>${toCurrency(interest)}</td>
                             <td>${toCurrency(totalPrincipalPayment)}</td>
+                            <td>${toCurrency(monthlyFees)}</td>
                             <td>${toCurrency(monthTotalPay)}</td>
                             <td>${toCurrency(balance)}</td>
                         </tr>
@@ -2027,6 +2108,7 @@ ${shareUrl}`;
                                 <td><span class="toggle-icon">▶</span> Year ${currentYear} Summary</td>
                                 <td>${toCurrency(yearlyInt)}</td>
                                 <td>${toCurrency(yearlyPrin)}</td>
+                                <td>${toCurrency(yearlyFees)}</td>
                                 <td>${toCurrency(yearlyTotal)}</td>
                                 <td>${toCurrency(balance)}</td>
                             </tr>
@@ -2035,7 +2117,7 @@ ${shareUrl}`;
                         
                         // Reset for next year
                         monthBuffer = [];
-                        yearlyInt = 0; yearlyPrin = 0; yearlyTotal = 0;
+                        yearlyInt = 0; yearlyPrin = 0; yearlyFees = 0; yearlyTotal = 0;
                     }
 
                     if(balance <= 0.01) {
@@ -2274,7 +2356,7 @@ ${shareUrl}`;
             doc.text(`Interest Rate: ${rate}%`, 14, y+18);
             doc.text(`Loan Term: ${term} Years`, 14, y+24);
 
-            // 4. EXPENSES SECTION (RIGHT COLUMN)
+            // 4. MONTHLY EXPENSES SECTION (RIGHT COLUMN - UPDATED)
             doc.setFont("helvetica", "bold");
             doc.setTextColor(15, 23, 42); 
             doc.setFontSize(11);
@@ -2284,19 +2366,31 @@ ${shareUrl}`;
             doc.setFontSize(10);
             doc.setTextColor(50);
             
-            const totalMonthlyText = document.getElementById('displayTotalMonthly').innerText;
+            let rightY = 40;
+            doc.text(`Property Tax (Annual): $${tax}`, 110, rightY);
+            doc.text(`Home Insurance (Annual): $${ins}`, 110, rightY+6);
+            doc.text(`HOA Fees (Monthly): $${hoa || 0}`, 110, rightY+12);
             
-            doc.text(`Property Tax (Annual): $${tax}`, 110, y);
-            doc.text(`Home Insurance (Annual): $${ins}`, 110, y+6);
-            doc.text(`HOA Fees (Monthly): $${hoa || 0}`, 110, y+12);
+            rightY += 18; // Move cursor down
+            
+            // CHECK FOR PMI IN GLOBAL SCHEDULE
+            if(currentSchedule.length > 0 && currentSchedule[0].pmi > 0) {
+                 const pmiVal = currentSchedule[0].pmi;
+                 const dropYear = Math.ceil(pmiDropMonth / 12);
+                 doc.text(`PMI: ${toCurrency(pmiVal)} until Month ${pmiDropMonth} (Year ${dropYear})`, 110, rightY);
+                 rightY += 6; // Push total down if PMI exists
+            }
+
+            const totalMonthlyText = document.getElementById('displayTotalMonthly').innerText;
             
             // Highlight Total Monthly
             doc.setFont("helvetica", "bold");
             doc.setTextColor(13, 148, 136); // Teal color
-            doc.text(`Initial Monthly Total: ${totalMonthlyText}`, 110, y+22);
+            // Add a little extra breathing room before the total
+            doc.text(`Initial Monthly Total: ${totalMonthlyText}`, 110, rightY + 4);
             
-            // 5. LIFETIME TOTALS (NEW SECTION FOR PDF)
-            y = 70; // Move down below two columns
+            // 5. LIFETIME TOTALS
+            y = 75; // Start lower to clear the columns
             doc.setDrawColor(200, 200, 200);
             doc.line(14, y-5, 196, y-5); // Horizontal divider
             
@@ -2309,21 +2403,20 @@ ${shareUrl}`;
             doc.setTextColor(50);
             y += 6;
             
-            // Get values from the DOM to ensure consistency
+            // Get values from the DOM
             const ltPrincipal = document.getElementById('ltPrincipal').innerText;
             const ltInterest = document.getElementById('ltInterest').innerText;
             const ltTax = document.getElementById('ltTax').innerText;
             const ltIns = document.getElementById('ltIns').innerText;
             const ltTotal = document.getElementById('ltTotal').innerText;
             
-            let summaryText = `Principal: ${ltPrincipal}   Interest: ${ltInterest}   Taxes: ${ltTax}   Insurance: ${ltIns}`;
+            let summaryText = `Principal: ${ltPrincipal}    Interest: ${ltInterest}    Taxes: ${ltTax}    Insurance: ${ltIns}`;
             
-            // Add conditional items if they exist
             const pmiVal = document.getElementById('ltPMI').innerText;
-            if(pmiVal !== "$0.00" && pmiVal !== "$0") summaryText += `   PMI: ${pmiVal}`;
+            if(pmiVal !== "$0.00" && pmiVal !== "$0") summaryText += `    PMI: ${pmiVal}`;
             
             const hoaVal = document.getElementById('ltHOA').innerText;
-            if(hoaVal !== "$0.00" && hoaVal !== "$0") summaryText += `   HOA: ${hoaVal}`;
+            if(hoaVal !== "$0.00" && hoaVal !== "$0") summaryText += `    HOA: ${hoaVal}`;
             
             doc.text(summaryText, 14, y);
             
@@ -2332,10 +2425,10 @@ ${shareUrl}`;
             doc.setTextColor(13, 148, 136); 
             doc.text(`TOTAL LIFETIME COST: ${ltTotal}`, 14, y);
 
-            // 6. EXTRA PAYMENTS SECTION (IF ANY)
-            y += 12; // Add space
+            // 6. EXTRA PAYMENTS SECTION (If Any)
+            // Removed extra spacing here to tighten layout
+            y += 8; 
             
-            // Also include PDF tracking event
             if(typeof gtag === 'function') {
                 gtag('event', 'click_save_pdf', {
                     'event_category': 'Engagement',
@@ -2359,38 +2452,25 @@ ${shareUrl}`;
                 if(getCleanNumber('incIns') > 0) extraText += `Ins Increase: ${incIns}%/yr.`;
                 
                 doc.text(extraText, 14, y);
-                y += 8; 
+                y += 6; // Reduced spacing after this block
             }
 
-            // 7. PMI STATUS
-            // Fix PMI Text overlap & encoding
-            let pmiText = document.getElementById('pmiStatus').innerText;
-            pmiText = pmiText.replace(/≥/g, ">="); 
-            // Also clean up em-dashes or other special chars that might break jsPDF
-            pmiText = pmiText.replace(/—/g, "-"); 
+            // 7. GENERATE TABLE
+            // Previous PMI Status text removed to bring table closer
             
-            doc.setFont("helvetica", "italic");
-            doc.setFontSize(9);
-            doc.setTextColor(217, 119, 6); // Orange for warning/info
-            doc.text(pmiText, 14, y); 
-
-            if(pmiDropMonth > 0) {
-                doc.setTextColor(34, 197, 94); // Green
-            }
-            
-            // 8. GENERATE TABLE
             const tableData = currentSchedule.map(row => [
                 row.year,
                 row.num,
                 toCurrency(row.int),
                 toCurrency(row.prin),
+                toCurrency(row.fees),
                 toCurrency(row.total), 
                 toCurrency(row.bal)
             ]);
 
             doc.autoTable({
-                startY: y + 10, // Dynamic start based on content above
-                head: [['Year', 'Month', 'Interest', 'Principal', 'Total Payment', 'Balance']],
+                startY: y + 2, // Very tight spacing to the previous element
+                head: [['Year', 'Month', 'Interest', 'Principal', 'Tax/Ins/Fees', 'Total', 'Balance']],
                 body: tableData,
                 theme: 'grid',
                 headStyles: { fillColor: [15, 23, 42] },
