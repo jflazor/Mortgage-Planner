@@ -9,9 +9,9 @@
     
     <link rel="canonical" href="https://mortgageplanner.net" />
 
-    <link rel="icon" href="https://mortgageplanner.net/favicon.png?v=7" type="image/png" sizes="any">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://mortgageplanner.net/favicon.png?v=7">
-    <link rel="icon" sizes="192x192" href="https://mortgageplanner.net/favicon.png?v=7">
+    <link rel="icon" href="https://mortgageplanner.net/favicon.png?v=8" type="image/png" sizes="any">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://mortgageplanner.net/favicon.png?v=8">
+    <link rel="icon" sizes="192x192" href="https://mortgageplanner.net/favicon.png?v=8">
 
     <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIk1vcnRnYWdlIFBsYW5uZXIiLAogICJzaG9ydF9uYW1lIjogIk1vcnRnYWdlIiwKICAic3RhcnRfdXJsIjogImh0dHBzOi8vbW9ydGdhZ2VwbGFubmVyLm5ldCIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2ZmZmZmZiIsCiAgInRoZW1lX2NvbG9yIjogIiMwZjE3MmEiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL21vcnRnYWdlcGxhbm5lci5uZXQvZmF2aWNvbi5wbmciLAogICAgICAic2l6ZXMiOiAiMTkyeDE5MiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIKICAgIH0sCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly9tb3J0Z2FnZXBsYW5uZXIubmV0L2Zhdmljb24ucG5nIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgICB9CiAgXQp9">
 
@@ -20,7 +20,7 @@
     <meta property="og:description" content="I built a custom mortgage plan. Click to see the exact numbers, payoff date, and total savings.">
     <meta property="og:url" content="https://mortgageplanner.net">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="https://mortgageplanner.net/og-image.png?v=7">
+    <meta property="og:image" content="https://mortgageplanner.net/og-image.png?v=8">
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -2546,18 +2546,17 @@
                 }
             });
 
-            // NEW: Set Metadata (Fixes Tab Name)
             doc.setProperties({ title: filename });
 
-            // NEW: Save Logic Bypass for Wix using LINK Trigger
-            // This attempts to bypass the iframe block by creating a specific download link
+            // FIXED DOWNLOAD LOGIC FOR WIX: DIRECT DOWNLOAD TRIGGER
+            // Removed target="_blank" to force download within the same context
             const pdfBlob = doc.output('blob');
             const blobUrl = URL.createObjectURL(pdfBlob);
             
             const link = document.createElement('a');
             link.href = blobUrl;
-            link.download = filename; // Suggests the filename
-            link.target = "_blank";   // Opens in new tab to bypass iframe restrictions
+            link.download = filename; 
+            // link.target = "_blank"; // REMOVED THIS LINE
             document.body.appendChild(link);
             link.click();
             
