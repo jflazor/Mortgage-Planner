@@ -9,9 +9,9 @@
     
     <link rel="canonical" href="https://mortgageplanner.net" />
 
-    <link rel="icon" href="https://mortgageplanner.net/favicon.png?v=26" type="image/png" sizes="any">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://mortgageplanner.net/favicon.png?v=26">
-    <link rel="icon" sizes="192x192" href="https://mortgageplanner.net/favicon.png?v=26">
+    <link rel="icon" href="https://mortgageplanner.net/favicon.png?v=27" type="image/png" sizes="any">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://mortgageplanner.net/favicon.png?v=27">
+    <link rel="icon" sizes="192x192" href="https://mortgageplanner.net/favicon.png?v=27">
 
     <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIk1vcnRnYWdlIFBsYW5uZXIiLAogICJzaG9ydF9uYW1lIjogIk1vcnRnYWdlIiwKICAic3RhcnRfdXJsIjogImh0dHBzOi8vbW9ydGdhZ2VwbGFubmVyLm5ldCIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2ZmZmZmZiIsCiAgInRoZW1lX2NvbG9yIjogIiMwZjE3MmEiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL21vcnRnYWdlcGxhbm5lci5uZXQvZmF2aWNvbi5wbmciLAogICAgICAic2l6ZXMiOiAiMTkyeDE5MiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIKICAgIH0sCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly9tb3J0Z2FnZXBsYW5uZXIubmV0L2Zhdmljb24ucG5nIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgICB9CiAgXQp9">
 
@@ -20,7 +20,7 @@
     <meta property="og:description" content="I built a custom mortgage plan. Click to see the exact numbers, payoff date, and total savings.">
     <meta property="og:url" content="https://mortgageplanner.net">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="https://mortgageplanner.net/og-image.png?v=26">
+    <meta property="og:image" content="https://mortgageplanner.net/og-image.png?v=27">
 
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-HPMLZPDC1Z"></script>
     <script>
@@ -2220,7 +2220,7 @@
             // Clean Monthly Total (for filename)
             const cleanMonthly = Math.round(parseFloat(monthlyTotal.replace(/[^0-9.]/g, '')));
 
-            // --- NEW: Calculate PMI Drop Date ---
+            // --- NEW: Calculate PMI Drop Date (Single Line) ---
             let pmiDropText = "";
             if (pmiDropMonth > 0) {
                 const dropYear = Math.ceil(pmiDropMonth / 12);
@@ -2228,7 +2228,7 @@
                 pmiDropText = `
                     <div class="row" style="margin-top:4px; ${pmiStyle}">
                         <span class="label" style="${pmiStyle}">PMI Removal</span>
-                        <span class="value" style="${pmiStyle} text-align:right;">Month ${pmiDropMonth}, Year ${dropYear}</span>
+                        <span class="value" style="${pmiStyle} text-align:right; white-space:nowrap;">Month ${pmiDropMonth}, Year ${dropYear}</span>
                     </div>
                 `;
             }
@@ -2290,8 +2290,8 @@
                         .label { color: #64748b; font-weight: 600; }
                         
                         /* Ensure Values don't wrap and align right */
-                        .value { font-weight: 700; color: #0f172a; font-size: 1rem; text-align: right; white-space: nowrap; }
-                        .highlight { color: #0d9488; font-size: 1rem; }
+                        .value { font-weight: 700; color: #0f172a; font-size: 0.9rem; text-align: right; white-space: nowrap; }
+                        .highlight { color: #0d9488; font-size: 0.95rem; }
                         .divider { border-top: 1px dashed #cbd5e1; padding-top: 6px; margin-top: 6px; }
 
                         /* Table Styles */
