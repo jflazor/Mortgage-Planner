@@ -9,9 +9,9 @@
     
     <link rel="canonical" href="https://mortgageplanner.net" />
 
-    <link rel="icon" href="https://mortgageplanner.net/favicon.png?v=9" type="image/png" sizes="any">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://mortgageplanner.net/favicon.png?v=9">
-    <link rel="icon" sizes="192x192" href="https://mortgageplanner.net/favicon.png?v=9">
+    <link rel="icon" href="https://mortgageplanner.net/favicon.png?v=13" type="image/png" sizes="any">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://mortgageplanner.net/favicon.png?v=13">
+    <link rel="icon" sizes="192x192" href="https://mortgageplanner.net/favicon.png?v=13">
 
     <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIk1vcnRnYWdlIFBsYW5uZXIiLAogICJzaG9ydF9uYW1lIjogIk1vcnRnYWdlIiwKICAic3RhcnRfdXJsIjogImh0dHBzOi8vbW9ydGdhZ2VwbGFubmVyLm5ldCIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2ZmZmZmZiIsCiAgInRoZW1lX2NvbG9yIjogIiMwZjE3MmEiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL21vcnRnYWdlcGxhbm5lci5uZXQvZmF2aWNvbi5wbmciLAogICAgICAic2l6ZXMiOiAiMTkyeDE5MiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIKICAgIH0sCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly9tb3J0Z2FnZXBsYW5uZXIubmV0L2Zhdmljb24ucG5nIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgICB9CiAgXQp9">
 
@@ -20,7 +20,7 @@
     <meta property="og:description" content="I built a custom mortgage plan. Click to see the exact numbers, payoff date, and total savings.">
     <meta property="og:url" content="https://mortgageplanner.net">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="https://mortgageplanner.net/og-image.png?v=9">
+    <meta property="og:image" content="https://mortgageplanner.net/og-image.png?v=13">
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -49,7 +49,12 @@
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
-      gtag('config', 'G-HPMLZPDC1Z');
+      // Iframe-Optimized Config
+      gtag('config', 'G-HPMLZPDC1Z', {
+          'cookie_flags': 'SameSite=None;Secure', // Allows tracking inside Wix iframe
+          'page_location': window.location.href,
+          'page_referrer': document.referrer // Captures the Wix site hosting the widget
+      });
     </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1219,7 +1224,7 @@
                     <h2>Your Plan Breakdown</h2>
                     <div class="results-actions">
                         <button class="btn-secondary" onclick="emailPlan()">Email Plan</button>
-                        <button class="btn-secondary" onclick="exportPDF()">Save PDF</button>
+                        <button class="btn-secondary" onclick="exportPDF()">Print / Save PDF</button>
                     </div>
                 </div>
 
@@ -2546,22 +2551,13 @@
                 }
             });
 
+            // FINAL SOLUTION FOR WIX PDF: Open generated Blob in NEW WINDOW for PRINTING/SAVING
+            // Direct downloads are often blocked in sandboxed iframes.
+            // Opening a new window with the PDF data lets the user use the browser's native "Save" or "Print".
             doc.setProperties({ title: filename });
-
-            // FIXED DOWNLOAD LOGIC FOR WIX: DIRECT DOWNLOAD TRIGGER
-            // Uses datauristring to bypass blob restrictions in iframes
-            const pdfDataUri = doc.output('datauristring');
-            
-            const link = document.createElement('a');
-            link.href = pdfDataUri;
-            link.download = filename; 
-            document.body.appendChild(link);
-            link.click();
-            
-            // Clean up
-            setTimeout(() => {
-                document.body.removeChild(link);
-            }, 100);
+            const pdfBlob = doc.output('blob');
+            const blobUrl = URL.createObjectURL(pdfBlob);
+            window.open(blobUrl, '_blank');
         }
 
         // Initialize on load
