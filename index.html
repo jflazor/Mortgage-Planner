@@ -9,9 +9,9 @@
     
     <link rel="canonical" href="https://mortgageplanner.net" />
 
-    <link rel="icon" href="https://mortgageplanner.net/favicon.png?v=29" type="image/png" sizes="any">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://mortgageplanner.net/favicon.png?v=29">
-    <link rel="icon" sizes="192x192" href="https://mortgageplanner.net/favicon.png?v=29">
+    <link rel="icon" href="https://mortgageplanner.net/favicon.png?v=30" type="image/png" sizes="any">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://mortgageplanner.net/favicon.png?v=30">
+    <link rel="icon" sizes="192x192" href="https://mortgageplanner.net/favicon.png?v=30">
 
     <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIk1vcnRnYWdlIFBsYW5uZXIiLAogICJzaG9ydF9uYW1lIjogIk1vcnRnYWdlIiwKICAic3RhcnRfdXJsIjogImh0dHBzOi8vbW9ydGdhZ2VwbGFubmVyLm5ldCIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2ZmZmZmZiIsCiAgInRoZW1lX2NvbG9yIjogIiMwZjE3MmEiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL21vcnRnYWdlcGxhbm5lci5uZXQvZmF2aWNvbi5wbmciLAogICAgICAic2l6ZXMiOiAiMTkyeDE5MiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIKICAgIH0sCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly9tb3J0Z2FnZXBsYW5uZXIubmV0L2Zhdmljb24ucG5nIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgICB9CiAgXQp9">
 
@@ -20,7 +20,7 @@
     <meta property="og:description" content="I built a custom mortgage plan. Click to see the exact numbers, payoff date, and total savings.">
     <meta property="og:url" content="https://mortgageplanner.net">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="https://mortgageplanner.net/og-image.png?v=29">
+    <meta property="og:image" content="https://mortgageplanner.net/og-image.png?v=30">
 
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-HPMLZPDC1Z"></script>
     <script>
@@ -1252,7 +1252,7 @@
             // Special handling for Embed Modal to generate the code
             if(id === 'embedModal') {
                 const url = window.location.origin + window.location.pathname;
-                const code = `<iframe src="${url}?mode=embed" width="100%" height="800" frameborder="0" style="border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.05);"></iframe>`;
+                const code = `<iframe src="${url}?mode=embed" width="100%" height="800" frameborder="0" style="border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.05);"></iframe>\n<div style="text-align:center; font-family:sans-serif; font-size:12px; margin-top:10px; color:#64748b;">Powered by <a href="https://mortgageplanner.net" target="_blank" style="color:#0d9488; text-decoration:none; font-weight:600;">Mortgage Planner</a></div>`;
                 document.getElementById('embedCodeBox').value = code;
             }
             document.getElementById(id).classList.add('open');
@@ -2227,8 +2227,12 @@
                 const pmiStyle = "color:#d97706; font-weight:600;";
                 pmiDropText = `
                     <div class="row" style="margin-top:4px; ${pmiStyle}">
-                        <span class="label" style="${pmiStyle}">PMI Removal</span>
-                        <span class="value" style="${pmiStyle} text-align:right; white-space:nowrap;">Month ${pmiDropMonth}, Year ${dropYear}</span>
+                        <span class="label" style="${pmiStyle}">PMI Drop Month</span>
+                        <span class="value" style="${pmiStyle} text-align:right;">${pmiDropMonth}</span>
+                    </div>
+                    <div class="row" style="${pmiStyle}">
+                        <span class="label" style="${pmiStyle}">PMI Drop Year</span>
+                        <span class="value" style="${pmiStyle} text-align:right;">${dropYear}</span>
                     </div>
                 `;
             }
