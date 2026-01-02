@@ -9,9 +9,9 @@
     
     <link rel="canonical" href="https://mortgageplanner.net" />
 
-    <link rel="icon" href="https://mortgageplanner.net/favicon.png?v=17" type="image/png" sizes="any">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://mortgageplanner.net/favicon.png?v=17">
-    <link rel="icon" sizes="192x192" href="https://mortgageplanner.net/favicon.png?v=17">
+    <link rel="icon" href="https://mortgageplanner.net/favicon.png?v=18" type="image/png" sizes="any">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://mortgageplanner.net/favicon.png?v=18">
+    <link rel="icon" sizes="192x192" href="https://mortgageplanner.net/favicon.png?v=18">
 
     <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIk1vcnRnYWdlIFBsYW5uZXIiLAogICJzaG9ydF9uYW1lIjogIk1vcnRnYWdlIiwKICAic3RhcnRfdXJsIjogImh0dHBzOi8vbW9ydGdhZ2VwbGFubmVyLm5ldCIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2ZmZmZmZiIsCiAgInRoZW1lX2NvbG9yIjogIiMwZjE3MmEiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL21vcnRnYWdlcGxhbm5lci5uZXQvZmF2aWNvbi5wbmciLAogICAgICAic2l6ZXMiOiAiMTkyeDE5MiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIKICAgIH0sCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly9tb3J0Z2FnZXBsYW5uZXIubmV0L2Zhdmljb24ucG5nIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgICB9CiAgXQp9">
 
@@ -20,7 +20,7 @@
     <meta property="og:description" content="I built a custom mortgage plan. Click to see the exact numbers, payoff date, and total savings.">
     <meta property="og:url" content="https://mortgageplanner.net">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="https://mortgageplanner.net/og-image.png?v=17">
+    <meta property="og:image" content="https://mortgageplanner.net/og-image.png?v=18">
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -49,7 +49,6 @@
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
-      // Iframe-Optimized Config
       gtag('config', 'G-HPMLZPDC1Z', {
           'cookie_flags': 'SameSite=None;Secure', 
           'page_location': window.location.href,
@@ -60,9 +59,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     
@@ -1206,9 +1202,9 @@
                     Share this Plan
                 </button>
                 
-                <button onclick="bookmarkPlan()" class="btn-secondary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 0.8rem; border-style: dashed;">
-                    <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
-                    Bookmark this Plan
+                <button onclick="printPlan()" class="btn-secondary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 0.8rem; border-style: dashed;">
+                    <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2.4-4a2 2 0 012-2h1.2a2 2 0 012 2v4a2 2 0 01-2 2H9.4a2 2 0 01-2-2v-4zM7 9a2 2 0 012-2h6a2 2 0 012 2v2H7V9z"></path></svg>
+                    Print / Save PDF
                 </button>
             </div>
         </div>
@@ -1224,7 +1220,7 @@
                     <h2>Your Plan Breakdown</h2>
                     <div class="results-actions">
                         <button class="btn-secondary" onclick="emailPlan()">Email Plan</button>
-                        <button class="btn-secondary" onclick="exportPDF()">Print / Save PDF</button>
+                        <button class="btn-secondary" onclick="printPlan()">Print / Save PDF</button>
                     </div>
                 </div>
 
@@ -1653,8 +1649,6 @@
             const newUrl = getShareableLink();
             
             // 1. SILENTLY UPDATE URL BAR
-            // Note: In an iframe, this updates the iframe URL, not the parent window URL (usually restricted).
-            // But it's good practice for standalone use.
             window.history.pushState({}, '', newUrl);
             
             // Track Event
@@ -2378,198 +2372,129 @@
             });
         }
 
-        function exportPDF() {
-            // STEP 1: Immediately open a blank window
-            // This MUST be done on the initial click to bypass popup blockers
-            const newWindow = window.open('', '_blank');
-            
-            // Safety check if the popup blocker still caught it
-            if (!newWindow) {
-               alert('Please allow popups for this site to view the PDF.');
-               return;
+        // --- NEW: HTML Print/Save Solution (Fixes Wix Blocking PDF Downloads) ---
+        function printPlan() {
+            // Track Event
+            if(typeof gtag === 'function') {
+                gtag('event', 'click_save_pdf', {
+                    'event_category': 'Engagement',
+                    'event_label': 'HTML Print View'
+                });
             }
 
-            // --- Updated Step 2: NO "Generating" text. Just prepare structure ---
-            newWindow.document.write(`
-                <html>
-                    <head><title>Mortgage Plan PDF</title></head>
-                    <body style="margin:0; background-color:#f8fafc;">
-                    </body>
-                </html>
-            `);
-
-            // STEP 3: Generate the PDF 
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            // --- PDF GENERATION LOGIC ---
+            // GATHER DATA
             const price = document.getElementById('homePrice').value;
             const downPmt = document.getElementById('downPayment').value;
-            const downType = document.getElementById('downPaymentType').value === 'percent' ? '%' : '$';
+            const downType = document.getElementById('downPaymentType').value;
             const rate = document.getElementById('interestRate').value;
             const term = document.getElementById('loanTerm').value;
             const tax = document.getElementById('annualTax').value;
             const ins = document.getElementById('annualIns').value;
             const hoa = document.getElementById('monthlyHOA').value;
             
-            const extraPrincipal = document.getElementById('extraPrincipal').value;
-            const incTax = document.getElementById('incTax').value;
-            const incIns = document.getElementById('incIns').value;
-            const incHoa = document.getElementById('incHOA').value;
+            const principal = document.getElementById('displayLoanPrincipal').innerText;
+            const monthlyTotal = document.getElementById('displayTotalMonthly').innerText;
 
-            const monthly = document.getElementById('displayTotalMonthly').innerText.replace(/[^0-9.]/g, '');
-            const principalVal = document.getElementById('displayLoanPrincipal').innerText;
-            const cleanPrice = getCleanNumber('homePrice');
-
-            const filename = `MortgagePlan_${Math.round(cleanPrice/1000)}k_${Math.round(monthly)}mo_${term}yr.pdf`;
-
-            // ... PDF Content ...
-            doc.setFont("helvetica", "bold");
-            doc.setTextColor(15, 23, 42); 
-            doc.setFontSize(22);
-            doc.text("Mortgage Planner | Official Report", 14, 20);
-            
-            doc.setFontSize(11);
-            doc.text("Loan Details:", 14, 32);
-            
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(10);
-            doc.setTextColor(50);
-            
-            let y = 40;
-            doc.text(`Home Price: $${price}`, 14, y);
-            doc.text(`Down Payment: ${downPmt}${downType}`, 14, y+6);
-            doc.text(`Loan Amount: ${principalVal}`, 14, y+12);
-            doc.text(`Interest Rate: ${rate}%`, 14, y+18);
-            doc.text(`Loan Term: ${term} Years`, 14, y+24);
-
-            doc.setFont("helvetica", "bold");
-            doc.setTextColor(15, 23, 42); 
-            doc.setFontSize(11);
-            doc.text("Monthly Expenses:", 110, 32);
-            
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(10);
-            doc.setTextColor(50);
-            
-            let rightY = 40;
-            doc.text(`Property Tax (Annual): $${tax}`, 110, rightY);
-            doc.text(`Home Insurance (Annual): $${ins}`, 110, rightY+6);
-            doc.text(`HOA Fees (Monthly): $${hoa || 0}`, 110, rightY+12);
-            
-            rightY += 18;
-            
-            if(currentSchedule.length > 0 && currentSchedule[0].pmi > 0) {
-                 const pmiVal = currentSchedule[0].pmi;
-                 const dropYear = Math.ceil(pmiDropMonth / 12);
-                 doc.text(`PMI: ${toCurrency(pmiVal)} until Month ${pmiDropMonth} (Year ${dropYear})`, 110, rightY);
-                 rightY += 6; 
-            }
-
-            const totalMonthlyText = document.getElementById('displayTotalMonthly').innerText;
-            
-            doc.setFont("helvetica", "bold");
-            doc.setTextColor(13, 148, 136); 
-            doc.text(`Initial Monthly Total: ${totalMonthlyText}`, 110, rightY + 4);
-            
-            y = 75; 
-            doc.setDrawColor(200, 200, 200);
-            doc.line(14, y-5, 196, y-5); 
-            
-            doc.setFont("helvetica", "bold");
-            doc.setTextColor(15, 23, 42); 
-            doc.text("Lifetime Cost Breakdown:", 14, y);
-            
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(9);
-            doc.setTextColor(50);
-            y += 6;
-            
-            const ltPrincipal = document.getElementById('ltPrincipal').innerText;
-            const ltInterest = document.getElementById('ltInterest').innerText;
-            const ltTax = document.getElementById('ltTax').innerText;
-            const ltIns = document.getElementById('ltIns').innerText;
-            const ltTotal = document.getElementById('ltTotal').innerText;
-            
-            let summaryText = `Principal: ${ltPrincipal}    Interest: ${ltInterest}    Taxes: ${ltTax}    Insurance: ${ltIns}`;
-            
-            const pmiVal = document.getElementById('ltPMI').innerText;
-            if(pmiVal !== "$0.00" && pmiVal !== "$0") summaryText += `    PMI: ${pmiVal}`;
-            
-            const hoaVal = document.getElementById('ltHOA').innerText;
-            if(hoaVal !== "$0.00" && hoaVal !== "$0") summaryText += `    HOA: ${hoaVal}`;
-            
-            doc.text(summaryText, 14, y);
-            
-            y += 6;
-            doc.setFont("helvetica", "bold");
-            doc.setTextColor(13, 148, 136); 
-            doc.text(`TOTAL LIFETIME COST: ${ltTotal}`, 14, y);
-
-            y += 8; 
-            
-            if(typeof gtag === 'function') {
-                gtag('event', 'click_save_pdf', {
-                    'event_category': 'Engagement',
-                    'event_label': 'PDF Export'
-                });
-            }
-            
-            if(getCleanNumber('extraPrincipal') > 0 || getCleanNumber('incTax') > 0 || getCleanNumber('incIns') > 0) {
-                doc.setFont("helvetica", "bold");
-                doc.setTextColor(15, 23, 42); 
-                doc.setFontSize(10);
-                doc.text("Assumed Increases & Extra Payments:", 14, y);
-                
-                doc.setFont("helvetica", "normal");
-                doc.setTextColor(50);
-                y += 5;
-                
-                let extraText = "";
-                if(getCleanNumber('extraPrincipal') > 0) extraText += `Extra Principal: $${extraPrincipal}/mo.  `;
-                if(getCleanNumber('incTax') > 0) extraText += `Tax Increase: ${incTax}%/yr.  `;
-                if(getCleanNumber('incIns') > 0) extraText += `Ins Increase: ${incIns}%/yr.`;
-                
-                doc.text(extraText, 14, y);
-                y += 6;
-            }
-            
-            const tableData = currentSchedule.map(row => [
-                row.year,
-                row.num,
-                toCurrency(row.int),
-                toCurrency(row.prin),
-                toCurrency(row.fees),
-                toCurrency(row.total), 
-                toCurrency(row.bal)
-            ]);
-
-            doc.autoTable({
-                startY: y + 2, 
-                head: [['Year', 'Month', 'Interest', 'Principal', 'Tax/Ins/Fees', 'Total', 'Balance']],
-                body: tableData,
-                theme: 'grid',
-                headStyles: { fillColor: [15, 23, 42] },
-                styles: { font: 'helvetica', fontSize: 8 }, 
-                didParseCell: function(data) {
-                    if (data.row.raw[1] === pmiDropMonth) {
-                        data.cell.styles.fillColor = [220, 252, 231]; 
-                    }
+            // Generate Table Rows
+            let tableRows = '';
+            // Limit to first 24 months to save paper (or full list if preferred)
+            // Let's do full list but compact
+            currentSchedule.forEach(row => {
+                // Highlight Year Summary Rows
+                if (row.num % 12 === 0) {
+                     tableRows += `
+                        <tr style="background:#f1f5f9; font-weight:bold;">
+                            <td style="padding:4px;">Year ${row.year}</td>
+                            <td>-</td>
+                            <td>${toCurrency(row.bal)}</td>
+                        </tr>
+                     `;
                 }
             });
 
-            doc.setProperties({ title: filename });
+            // CREATE HTML CONTENT
+            const content = `
+                <html>
+                <head>
+                    <title>Mortgage Plan - Print View</title>
+                    <style>
+                        body { font-family: sans-serif; padding: 40px; color: #0f172a; }
+                        h1 { border-bottom: 2px solid #0f172a; padding-bottom: 10px; margin-bottom: 20px; }
+                        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+                        .box { background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; }
+                        .label { font-size: 0.85rem; color: #64748b; font-weight: bold; display: block; margin-bottom: 4px; }
+                        .value { font-size: 1.1rem; font-weight: bold; }
+                        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 20px; }
+                        th { text-align: left; background: #0f172a; color: white; padding: 8px; }
+                        td { border-bottom: 1px solid #e2e8f0; padding: 6px 8px; }
+                        .highlight { color: #0d9488; }
+                        @media print {
+                            body { padding: 0; }
+                            .no-print { display: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="no-print" style="margin-bottom: 20px; padding: 10px; background: #dcfce7; border: 1px solid #86efac; border-radius: 6px; text-align: center;">
+                        <strong>Tip:</strong> In the print window that opens, select <strong>"Save as PDF"</strong> as your printer destination.
+                        <button onclick="window.print()" style="margin-left:10px; padding: 5px 10px; cursor:pointer;">Print / Save Now</button>
+                    </div>
 
-            // STEP 4: USE DATA URI STRING (WIX FIX)
-            // This bypasses the Blob restriction by embedding the entire file as a text string.
-            const pdfDataUri = doc.output('datauristring');
+                    <h1>Mortgage Plan Report</h1>
+                    
+                    <div class="grid">
+                        <div class="box">
+                            <h3>Loan Details</h3>
+                            <div><span class="label">Home Price</span> <span class="value">$${price}</span></div>
+                            <div style="margin-top:8px;"><span class="label">Loan Amount</span> <span class="value">${principal}</span></div>
+                            <div style="margin-top:8px;"><span class="label">Interest Rate</span> <span class="value">${rate}%</span></div>
+                            <div style="margin-top:8px;"><span class="label">Term</span> <span class="value">${term} Years</span></div>
+                        </div>
+                        <div class="box">
+                            <h3>Monthly Payment</h3>
+                            <div><span class="label">Initial Total</span> <span class="value highlight">${monthlyTotal}</span></div>
+                            <div style="margin-top:8px;"><span class="label">Property Tax (Annual)</span> <span class="value">$${tax}</span></div>
+                            <div style="margin-top:8px;"><span class="label">Insurance (Annual)</span> <span class="value">$${ins}</span></div>
+                        </div>
+                    </div>
 
-            // Wait a split second to simulate loading, then replace content
-            setTimeout(() => {
-                newWindow.document.body.innerHTML = `
-                    <iframe src="${pdfDataUri}" style="width:100%; height:100vh; border:none;"></iframe>
-                `;
-            }, 100);
+                    <h3>Annual Balance Summary</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Year</th>
+                                <th>Note</th>
+                                <th>Remaining Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tableRows}
+                        </tbody>
+                    </table>
+                    
+                    <div style="margin-top: 40px; font-size: 0.8rem; color: #64748b; text-align: center;">
+                        Generated by Mortgage Planner
+                    </div>
+
+                    <script>
+                        // Auto-trigger print
+                        setTimeout(() => {
+                            window.print();
+                        }, 500);
+                    <\/script>
+                </body>
+                </html>
+            `;
+
+            // OPEN & WRITE
+            // Using a new window avoids the iframe sandbox restrictions for printing
+            const printWindow = window.open('', '_blank');
+            if (printWindow) {
+                printWindow.document.write(content);
+                printWindow.document.close(); // Important for the load event to fire
+            } else {
+                alert("Please allow popups to view the printable report.");
+            }
         }
 
         // Initialize on load
